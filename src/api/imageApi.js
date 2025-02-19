@@ -7,7 +7,7 @@ export const resizeImage = async (imageFile, width, height) => {
   formData.append("width", width);
   formData.append("height", height);
 
-  const response = await fetch("http://localhost:5000/api/resize", {
+  const response = await fetch("https://pittsburgh-promotion-reservations-personalized.trycloudflare.com/api/resize", {
     method: "POST",
     body: formData,
   });
@@ -24,7 +24,7 @@ export const removeBackground = async (imageFile) => {
   formData.append("image", imageFile);
 
   const response = await axios.post(
-    "http://localhost:5000/api/ai/removebg",
+'https://pittsburgh-promotion-reservations-personalized.trycloudflare.com/api/ai/removebg',
     formData,
     {
       responseType: "blob",
