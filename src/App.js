@@ -3,9 +3,11 @@ import React, { useState } from "react";
 // import Toolbar from "./components/Toolbar";
 import Toolbar from "./Components/Toolbar";
 import CanvasEditor from "./Components/CanvasEditor";
-import { resizeImage, removeBackground } from "./api/imageApi";
+// import { resizeImage, removeBackground } from "./api/imageApi";
+import { resizeImage,removeBackground } from "./redux/actions";
+import { connect } from "react-redux";
 
-function App() {
+const App=() => {
   const [imageSrc, setImageSrc] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -22,24 +24,37 @@ function App() {
     }
   };
 
-  const handleResize = async () => {
-    if (!imageFile) return;
-    try {
-      // Example resize dimensions; you can add UI to select these values
-      const blob = await resizeImage(imageFile, 300, 300);
-      const url = URL.createObjectURL(blob);
-      setImageSrc(url);
-    } catch (error) {
-      console.error("Resize failed:", error);
-    }
-  };
+  // const handleResize = async () => {
+  //   if (!imageFile) return;
+  //   try {
+  //     // Example resize dimensions; you can add UI to select these values
+  //     const blob = await resizeImage(imageFile, 300, 300);
+  //     const url = URL.createObjectURL(blob);
+  //     setImageSrc(url);
+  //   } catch (error) {
+  //     console.error("Resize failed:", error);
+  //   }
+  // };
 
+  // const processImage = async () => {
+  //   if (!imageFile) return;
+  //   // const result = await removeBackground(imageFile);
+  //   // setEditedImage(result);
+  //   const result=removeBackground(imageFile)
+  //   setEditedImage(result)
+  // };
   const processImage = async () => {
     if (!imageFile) return;
-    const result = await removeBackground(imageFile);
-    setEditedImage(result);
+  
+    try {
+      const result = await removeBackground(imageFile); 
+      
+      setEditedImage(result);
+    } catch (error) {
+      console.error("Error processing the image:", error);
+    }
   };
-
+  
   return (
     <div className="App">
       {/* <Toolbar onUpload={handleUpload} onResize={handleResize} /> */}
@@ -58,4 +73,11 @@ function App() {
   );
 }
 
-export default App;
+const mapStateToProps = (state) => ({
+  data:state.data.editedImage,
+});
+const mapStateToDispatch = (dispatch) => ({
+  removeBackground:(imageFile)=>dispatch(removeBackground(imageFile))
+});
+
+export default connect(mapStateToProps,mapStateToDispatch)(App);
