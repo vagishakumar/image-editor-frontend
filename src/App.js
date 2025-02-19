@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { connect } from "react-redux";
 import { uploadImage, removeBackgroundAction } from "./redux/actions";
 import CanvasEditor from "./Components/CanvasEditor";
+import MaskImage from "./Components/MaskImage";
+
 const App = ({ uploadImage, removeBackground, data }) => {
   const [imageSrc, setImageSrc] = useState(null);
 
@@ -49,23 +51,27 @@ const App = ({ uploadImage, removeBackground, data }) => {
   // };
 
   return (
-    <div className="App">
-      <h1>AI Background Remover</h1>
+    <>
+      {/* <div className="App">
+        <h1>AI Background Remover</h1>
 
-      <input type="file" onChange={handleUpload} />
+        <input type="file" onChange={handleUpload} />
 
-      {selectedImage && <CanvasEditor imageSrc={selectedImage} />}
-      {console.log(editedImage)}
-      {editedImage && (
-        <div>
-          <h2>Image with Background Removed</h2>
-          <CanvasEditor imageSrc={editedImage} />
-        </div>
-      )}
+        {selectedImage && <CanvasEditor imageSrc={selectedImage} />}
+        {console.log(editedImage)}
+        {editedImage && (
+          <div>
+            <h2>Image with Background Removed</h2>
+            <CanvasEditor imageSrc={editedImage} />
+          </div>
+        )}
+
+        <button onClick={processImage}>Remove BG</button>
+      </div> */}
 
       {/* <button onClick={processImage}disabled={!isuploaded}>Remove BG</button> */}
-      <button onClick={processImage}>Remove BG</button>
-    </div>
+      <MaskImage />
+    </>
   );
 };
 
