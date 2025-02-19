@@ -1,4 +1,4 @@
-export const api_url='https://international-indoor-mel-rebecca.trycloudflare.com'
+export const api_url='http://localhost:5000'
 
 export const apiRequest = (url, method, formData) => {
     return new Promise((resolve, reject) => {
