@@ -4,10 +4,11 @@ import React, { useState } from "react";
 import Toolbar from "./Components/Toolbar";
 import CanvasEditor from "./Components/CanvasEditor";
 // import { resizeImage, removeBackground } from "./api/imageApi";
-import { resizeImage,removeBackground } from "./redux/actions";
+import { resizeImage, removeBackground } from "./redux/actions";
 import { connect } from "react-redux";
+import MaskImage from "./Components/MaskImage";
 
-const App=() => {
+const App = () => {
   const [imageSrc, setImageSrc] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -45,39 +46,38 @@ const App=() => {
   // };
   const processImage = async () => {
     if (!imageFile) return;
-  
+
     try {
-      const result = await removeBackground(imageFile); 
-      
+      const result = await removeBackground(imageFile);
+
       setEditedImage(result);
     } catch (error) {
       console.error("Error processing the image:", error);
     }
   };
-  
+
   return (
     <div className="App">
       {/* <Toolbar onUpload={handleUpload} onResize={handleResize} /> */}
       {/* Pass imageSrc to CanvasEditor once integrated */}
       {/* <CanvasEditor imageSrc={imageSrc} /> */}
-      <div>
+      <MaskImage />
+      {/* <div>
         <h1>AI Background Remover</h1>
         <input type="file" onChange={handleUpload} />
         {selectedImage && <CanvasEditor imageSrc={selectedImage} />}
-        {/* <img src={selectedImage} alt="Original" width="300px" /> */}
         {editedImage && <CanvasEditor imageSrc={editedImage} />}
-        {/* {editedImage && <img src={editedImage} alt="Edited" width="300px" />} */}
         <button onClick={processImage}>Remove BG</button>
-      </div>
+      </div> */}
     </div>
   );
-}
+};
 
 const mapStateToProps = (state) => ({
-  data:state.data.editedImage,
+  data: state.data.editedImage,
 });
 const mapStateToDispatch = (dispatch) => ({
-  removeBackground:(imageFile)=>dispatch(removeBackground(imageFile))
+  removeBackground: (imageFile) => dispatch(removeBackground(imageFile)),
 });
 
-export default connect(mapStateToProps,mapStateToDispatch)(App);
+export default connect(mapStateToProps, mapStateToDispatch)(App);
