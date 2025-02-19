@@ -1,18 +1,30 @@
-// src/App.js
-import React, { useState } from "react";
-// import Toolbar from "./components/Toolbar";
-import Toolbar from "./Components/Toolbar";
-import CanvasEditor from "./Components/CanvasEditor";
-// import { resizeImage, removeBackground } from "./api/imageApi";
-import { resizeImage,removeBackground } from "./redux/actions";
-import { connect } from "react-redux";
 
-const App=() => {
+import React, { useState } from "react";
+import { connect } from "react-redux";
+import { uploadImage, removeBackgroundAction } from "./redux/actions"; 
+import CanvasEditor from "./Components/CanvasEditor"; 
+import { useEffect } from "react";
+const App = ({ uploadImage, removeBackground, data }) => {
   const [imageSrc, setImageSrc] = useState(null);
+
   const [imageFile, setImageFile] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [editedImage, setEditedImage] = useState(null);
-
+  const[editedImage,setEditedImage]=useState(null)
+  const [isuploaded,setIsUploaded]=useState(false)
+  // useEffect(() => {
+  //   if (data.uploadImage) {
+  //     setIsUploaded(true); 
+  //   }
+  // }, [data.uploadImage]);
+  // const handleUpload = (event) => {
+  //   const file = event.target.files[0];
+  //   if (file) {
+  //     setImageFile(file);
+  //     setSelectedImage(URL.createObjectURL(file)); 
+  //     setIsUploaded(false); 
+  //     uploadImage(file); 
+  //   }
+  // };
   const handleUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -23,61 +35,51 @@ const App=() => {
       reader.readAsDataURL(file);
     }
   };
-
-  // const handleResize = async () => {
-  //   if (!imageFile) return;
-  //   try {
-  //     // Example resize dimensions; you can add UI to select these values
-  //     const blob = await resizeImage(imageFile, 300, 300);
-  //     const url = URL.createObjectURL(blob);
-  //     setImageSrc(url);
-  //   } catch (error) {
-  //     console.error("Resize failed:", error);
-  //   }
-  // };
-
+  const processImage = () => {
+    if (!imageFile) return;
+    removeBackground(imageFile);
+  };
   // const processImage = async () => {
   //   if (!imageFile) return;
-  //   // const result = await removeBackground(imageFile);
-  //   // setEditedImage(result);
-  //   const result=removeBackground(imageFile)
-  //   setEditedImage(result)
-  // };
-  const processImage = async () => {
-    if (!imageFile) return;
   
-    try {
-      const result = await removeBackground(imageFile); 
-      
-      setEditedImage(result);
-    } catch (error) {
-      console.error("Error processing the image:", error);
-    }
-  };
+  //   try {
+  //     const result = await removeBackground(imageFile); 
+  //     setEditedImage(result);
+  //   } catch (error) {
+  //     console.error("Error processing the image:", error);
+  //   }
+  // };
   
   return (
     <div className="App">
-      {/* <Toolbar onUpload={handleUpload} onResize={handleResize} /> */}
-      {/* Pass imageSrc to CanvasEditor once integrated */}
-      {/* <CanvasEditor imageSrc={imageSrc} /> */}
-      <div>
-        <h1>AI Background Remover</h1>
-        <input type="file" onChange={handleUpload} />
-        {selectedImage && <CanvasEditor imageSrc={selectedImage} />}
-        {/* <img src={selectedImage} alt="Original" width="300px" /> */}
-        {editedImage && <CanvasEditor imageSrc={editedImage} />}
-        {/* {editedImage && <img src={editedImage} alt="Edited" width="300px" />} */}
-        <button onClick={processImage}>Remove BG</button>
-      </div>
+      <h1>AI Background Remover</h1>
+      
+      <input type="file" onChange={handleUpload} />
+
+      {selectedImage && <CanvasEditor imageSrc={selectedImage} />}
+{console.log(editedImage)}
+      {editedImage && (
+        <div>
+          <h2>Image with Background Removed</h2>
+          <CanvasEditor imageSrc={editedImage} />
+        </div>
+      )}
+
+      {/* <button onClick={processImage}disabled={!isuploaded}>Remove BG</button> */}
+      <button onClick={processImage}>Remove BG</button>
     </div>
   );
-}
+};
 
-const mapStateToProps = (state) => ({
-  data:state.data.editedImage,
-});
-const mapStateToDispatch = (dispatch) => ({
-  removeBackground:(imageFile)=>dispatch(removeBackground(imageFile))
+const mapStateToProps = (state) => {
+  console.log('state', state)
+  return({
+  data: state.data, 
+})};
+
+const mapDispatchToProps = (dispatch) => ({
+  uploadImage: (imageFile) => dispatch(uploadImage(imageFile)),
+  removeBackground: (imageFile) => dispatch(removeBackgroundAction(imageFile)),
 });
 
-export default connect(mapStateToProps,mapStateToDispatch)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);

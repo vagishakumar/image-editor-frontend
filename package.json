@@ -17,10 +17,11 @@
     "react-scripts": "5.0.1",
     "redux": "^5.0.1",
     "redux-promise": "^0.6.0",
+    "redux-promise-middleware": "^6.2.0",
     "use-image": "^1.1.1",
     "web-vitals": "^2.1.4"
   },
-  "proxy": "https://international-indoor-mel-rebecca.trycloudflare.com",
+  "proxy": "http://localhost:5000",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
