@@ -1,132 +1,149 @@
-// src/components/CanvasEditor.js
-import React, { useState, useRef, useMemo } from "react";
-import { Stage, Layer, Image as KonvaImage, Line } from "react-konva";
-import useImage from "use-image";
+import { useRef, useState } from "react";
+import { Stage, Layer, Image, Line } from "react-konva";
 
-const CanvasEditor = ({ imageSrc }) => {
-  // Load the image from the provided URL
-  const [image] = useImage(imageSrc);
-
-  // Keep an array of lines drawn by the user
+export default function ImageCanvasEditor() {
+  const [image, setImage] = useState(null);
   const [lines, setLines] = useState([]);
-  // Using a ref to track drawing status without causing re-renders
+  const [isErasing, setIsErasing] = useState(false);
   const isDrawing = useRef(false);
-
-  // Refs to access Konva nodes for compositing later
   const stageRef = useRef(null);
-  const imageLayerRef = useRef(null);
-  const drawingLayerRef = useRef(null);
-  const outputRef = useRef(null);
 
-  // Calculate the scale factor to fit the image in a 500x500 area.
-  const scale = useMemo(() => {
-    if (!image) return 1;
-    // Calculate scaling factor to fit within 500x500 while preserving aspect ratio
-    const scaleX = 500 / image.width;
-    const scaleY = 500 / image.height;
-    return Math.min(scaleX, scaleY);
-  }, [image]);
-
-  // Mouse down: start a new line
-  const handleMouseDown = (e) => {
-    isDrawing.current = true;
-    const stage = e.target.getStage();
-    const pos = stage.getPointerPosition();
-    setLines((prevLines) => [...prevLines, { points: [pos.x, pos.y] }]);
+  // Handle Image Upload
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    clearCanvas();
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new window.Image();
+        img.src = reader.result;
+        img.onload = () => setImage(img);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
-  // Mouse move: update the current line with new points
+  // Handle Drawing
+  const handleMouseDown = (e) => {
+    if (isErasing) return; // Don't draw while erasing
+    isDrawing.current = true;
+    const pos = e.target.getStage().getPointerPosition();
+    setLines([...lines, { points: [pos.x, pos.y] }]);
+  };
+
   const handleMouseMove = (e) => {
-    if (!isDrawing.current) return;
+    if (!isDrawing.current || isErasing) return;
     const stage = e.target.getStage();
     const point = stage.getPointerPosition();
-
-    // Update the last line with new point
-    setLines((prevLines) => {
-      const lastLine = prevLines[prevLines.length - 1];
-      lastLine.points = lastLine.points.concat([point.x, point.y]);
-      return [...prevLines.slice(0, prevLines.length - 1), lastLine];
-    });
+    let lastLine = lines[lines.length - 1];
+    lastLine.points = [...lastLine.points, point.x, point.y];
+    setLines([...lines.slice(0, -1), lastLine]);
   };
 
-  // Mouse up: finish drawing
   const handleMouseUp = () => {
     isDrawing.current = false;
   };
 
-  // When Apply Mask is clicked, composite the image and the mask strokes.
-  const applyMask = () => {
-    // Access the underlying canvas elements of each layer
-    const imageCanvas = imageLayerRef.current.getCanvas()._canvas;
-    const maskCanvas = drawingLayerRef.current.getCanvas()._canvas;
-    const width = imageCanvas.width;
-    const height = imageCanvas.height;
+  // Toggle Eraser Mode
+  const toggleEraser = () => {
+    setIsErasing(!isErasing);
+  };
 
-    // Create an offscreen canvas to do the compositing
-    const outputCanvas = document.createElement("canvas");
-    outputCanvas.width = width;
-    outputCanvas.height = height;
-    const ctx = outputCanvas.getContext("2d");
-
-    // Draw the image from the image layer first
-    ctx.drawImage(imageCanvas, 0, 0);
-    // Use destination-in to keep only the pixels where the mask is drawn
-    ctx.globalCompositeOperation = "destination-in";
-    ctx.drawImage(maskCanvas, 0, 0);
-    // Reset the composite operation
-    ctx.globalCompositeOperation = "source-over";
-
-    // Show the composited result by appending the offscreen canvas to the DOM
-    if (outputRef.current) {
-      outputRef.current.innerHTML = "";
-      outputRef.current.appendChild(outputCanvas);
+  // Erase a Line by Clicking
+  const handleErase = (index) => {
+    if (isErasing) {
+      setLines(lines.filter((_, i) => i !== index));
     }
   };
 
+  // Clear All Drawings
+  const clearCanvas = () => {
+    setLines([]);
+  };
+
+  // Extract the image inside the drawn shape
+  const extractImage = () => {
+    if (!image || lines.length === 0) return;
+
+    const stage = stageRef.current;
+    const originalCanvas = stage.toCanvas();
+
+    // Create a new canvas with transparency
+    const croppedCanvas = document.createElement("canvas");
+    croppedCanvas.width = originalCanvas.width;
+    croppedCanvas.height = originalCanvas.height;
+    const ctx = croppedCanvas.getContext("2d");
+
+    // Draw the mask
+    ctx.clearRect(0, 0, croppedCanvas.width, croppedCanvas.height);
+    ctx.beginPath();
+
+    // Use the first drawn line as the shape boundary
+    const shape = lines[0].points;
+    ctx.moveTo(shape[0], shape[1]);
+    for (let i = 2; i < shape.length; i += 2) {
+      ctx.lineTo(shape[i], shape[i + 1]);
+    }
+    ctx.closePath();
+    ctx.clip(); // Clip to the drawn shape
+
+    // Draw the image within the clipped region
+    ctx.drawImage(image, 0, 0, croppedCanvas.width, croppedCanvas.height);
+
+    // Convert to image and download
+    const croppedImageURL = croppedCanvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.href = croppedImageURL;
+    link.download = "cropped_shape.png";
+    link.click();
+  };
+
   return (
-    <div>
-      <h2>Draw a Mask over the Image (Konva)</h2>
-      <Stage
-        width={500}
-        height={500}
-        onMouseDown={handleMouseDown}
-        onMousemove={handleMouseMove}
-        onMouseup={handleMouseUp}
-        ref={stageRef}
-        style={{ border: "1px solid grey" }}
-      >
-        {/* Layer for the image */}
-        <Layer ref={imageLayerRef}>
-          {image && (
-            <KonvaImage
-              image={image}
-              x={0}
-              y={0}
-              // Scale the image to fit within 500x500
-              scale={{ x: scale, y: scale }}
-            />
-          )}
-        </Layer>
-        {/* Layer for the user's drawing (mask) */}
-        <Layer ref={drawingLayerRef}>
-          {lines.map((line, i) => (
-            <Line
-              key={i}
-              points={line.points}
-              stroke="black"
-              strokeWidth={20}
-              lineCap="round"
-              lineJoin="round"
-              opacity={1}
-            />
-          ))}
-        </Layer>
-      </Stage>
-      <br />
-      <button onClick={applyMask}>Apply Mask</button>
-      <div ref={outputRef} style={{ marginTop: "20px" }} />
+    <div className="p-4 space-y-4">
+      <input type="file" onChange={handleImageUpload} className="mb-2" />
+      <div className="border rounded-lg">
+        <Stage
+          ref={stageRef}
+          width={500}
+          height={400}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+        >
+          <Layer>
+            {image && <Image image={image} width={500} height={400} />}
+            {lines.map((line, i) => (
+              <Line
+                key={i}
+                points={line.points}
+                stroke="red"
+                strokeWidth={2}
+                onClick={() => handleErase(i)}
+              />
+            ))}
+          </Layer>
+        </Stage>
+      </div>
+      <div className="flex space-x-2">
+        <button
+          onClick={toggleEraser}
+          className="bg-yellow-500 text-white p-2 rounded"
+        >
+          {isErasing ? "Disable Eraser" : "Enable Eraser"}
+        </button>
+        <button
+          onClick={clearCanvas}
+          className="bg-gray-500 text-white p-2 rounded"
+        >
+          Clear All
+        </button>
+        <button
+          onClick={extractImage}
+          className="bg-blue-500 text-white p-2 rounded"
+        >
+          Extract Shape
+        </button>
+      </div>
     </div>
   );
-};
-
-export default CanvasEditor;
+}

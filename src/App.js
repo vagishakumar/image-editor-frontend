@@ -1,28 +1,26 @@
-
 import React, { useState } from "react";
 import { connect } from "react-redux";
-import { uploadImage, removeBackgroundAction } from "./redux/actions"; 
-import CanvasEditor from "./Components/CanvasEditor"; 
-import { useEffect } from "react";
+import { uploadImage, removeBackgroundAction } from "./redux/actions";
+import CanvasEditor from "./Components/CanvasEditor";
 const App = ({ uploadImage, removeBackground, data }) => {
   const [imageSrc, setImageSrc] = useState(null);
 
   const [imageFile, setImageFile] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
-  const[editedImage,setEditedImage]=useState(null)
-  const [isuploaded,setIsUploaded]=useState(false)
+  const [editedImage, setEditedImage] = useState(null);
+  const [isuploaded, setIsUploaded] = useState(false);
   // useEffect(() => {
   //   if (data.uploadImage) {
-  //     setIsUploaded(true); 
+  //     setIsUploaded(true);
   //   }
   // }, [data.uploadImage]);
   // const handleUpload = (event) => {
   //   const file = event.target.files[0];
   //   if (file) {
   //     setImageFile(file);
-  //     setSelectedImage(URL.createObjectURL(file)); 
-  //     setIsUploaded(false); 
-  //     uploadImage(file); 
+  //     setSelectedImage(URL.createObjectURL(file));
+  //     setIsUploaded(false);
+  //     uploadImage(file);
   //   }
   // };
   const handleUpload = (event) => {
@@ -41,23 +39,23 @@ const App = ({ uploadImage, removeBackground, data }) => {
   };
   // const processImage = async () => {
   //   if (!imageFile) return;
-  
+
   //   try {
-  //     const result = await removeBackground(imageFile); 
+  //     const result = await removeBackground(imageFile);
   //     setEditedImage(result);
   //   } catch (error) {
   //     console.error("Error processing the image:", error);
   //   }
   // };
-  
+
   return (
     <div className="App">
       <h1>AI Background Remover</h1>
-      
+
       <input type="file" onChange={handleUpload} />
 
       {selectedImage && <CanvasEditor imageSrc={selectedImage} />}
-{console.log(editedImage)}
+      {console.log(editedImage)}
       {editedImage && (
         <div>
           <h2>Image with Background Removed</h2>
@@ -72,10 +70,11 @@ const App = ({ uploadImage, removeBackground, data }) => {
 };
 
 const mapStateToProps = (state) => {
-  console.log('state', state)
-  return({
-  data: state.data, 
-})};
+  console.log("state", state);
+  return {
+    data: state.data,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => ({
   uploadImage: (imageFile) => dispatch(uploadImage(imageFile)),
