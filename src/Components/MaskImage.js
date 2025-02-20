@@ -1,7 +1,19 @@
 import { useRef, useState } from "react";
+import { connect } from "react-redux";
 import { Stage, Layer, Image, Line } from "react-konva";
+import {
+  uploadImageAction,
+  uploadMaskImgAction,
+  eraseObjectAction,
+} from "../redux/actions";
 
-export default function ImageCanvasEditor() {
+const ImageCanvasEditor = ({
+  uploadImage,
+  uploadMaskImg,
+  uploadedMaskImgUrl,
+  uploadedImageUrl,
+  eraseObject,
+}) => {
   const [image, setImage] = useState(null);
   const [lines, setLines] = useState([]);
   const [isErasing, setIsErasing] = useState(false);
@@ -13,6 +25,7 @@ export default function ImageCanvasEditor() {
     const file = e.target.files[0];
     clearCanvas();
     if (file) {
+      uploadImage(file);
       const reader = new FileReader();
       reader.onload = () => {
         const img = new window.Image();
@@ -90,12 +103,30 @@ export default function ImageCanvasEditor() {
     // Draw the image within the clipped region
     ctx.drawImage(image, 0, 0, croppedCanvas.width, croppedCanvas.height);
 
+    croppedCanvas.toBlob(async (blob) => {
+      if (!blob) return;
+
+      // Convert Blob to File
+      const file = new File([blob], "cropped-image.png", { type: "image/png" });
+
+      // Send file to API
+      // const formData = new FormData();
+      // formData.append("file", file);
+
+      uploadMaskImg(file);
+    }, "image/png");
+
     // Convert to image and download
-    const croppedImageURL = croppedCanvas.toDataURL("image/png");
-    const link = document.createElement("a");
-    link.href = croppedImageURL;
-    link.download = "cropped_shape.png";
-    link.click();
+    // const croppedImageURL = croppedCanvas.toDataURL("image/png");
+    // const link = document.createElement("a");
+    // link.href = croppedImageURL;
+    // link.download = "cropped_shape.png";
+    // link.click();
+  };
+
+  const eraseObj = () => {
+    console.log("erase obj called", uploadedMaskImgUrl, uploadedImageUrl);
+    eraseObject(uploadedMaskImgUrl.imageUrl, uploadedImageUrl.imageUrl);
   };
 
   return (
@@ -143,7 +174,31 @@ export default function ImageCanvasEditor() {
         >
           Extract Shape
         </button>
+        <button
+          onClick={eraseObj}
+          disabled={!uploadedMaskImgUrl || !uploadedImageUrl}
+          className="bg-blue-500 text-white p-2 rounded"
+        >
+          Erase Selected Image
+        </button>
       </div>
     </div>
   );
-}
+};
+
+const mapStateToProps = (state) => {
+  return {
+    data: state.data,
+    uploadedMaskImgUrl: state.data.uploadMaskImgUrl,
+    uploadedImageUrl: state.data.uploadImageUrl,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => ({
+  uploadImage: (imageFile) => dispatch(uploadImageAction(imageFile)),
+  uploadMaskImg: (imageFile) => dispatch(uploadMaskImgAction(imageFile)),
+  eraseObject: (imageUrl, maskUrl) =>
+    dispatch(eraseObjectAction(imageUrl, maskUrl)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ImageCanvasEditor);

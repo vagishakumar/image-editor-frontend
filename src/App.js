@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
-import { uploadImage, removeBackgroundAction } from "./redux/actions";
+import { uploadImageAction, removeBackgroundAction } from "./redux/actions";
 import CanvasEditor from "./Components/CanvasEditor";
 import MaskImage from "./Components/MaskImage";
 
-const App = ({ uploadImage, removeBackground, data }) => {
+const App = ({ uploadImageAction, removeBackground, data }) => {
   const [imageSrc, setImageSrc] = useState(null);
 
   const [imageFile, setImageFile] = useState(null);
@@ -12,17 +12,17 @@ const App = ({ uploadImage, removeBackground, data }) => {
   const [editedImage, setEditedImage] = useState(null);
   const [isuploaded, setIsUploaded] = useState(false);
   // useEffect(() => {
-  //   if (data.uploadImage) {
+  //   if (data.uploadImageAction) {
   //     setIsUploaded(true);
   //   }
-  // }, [data.uploadImage]);
+  // }, [data.uploadImageAction]);
   // const handleUpload = (event) => {
   //   const file = event.target.files[0];
   //   if (file) {
   //     setImageFile(file);
   //     setSelectedImage(URL.createObjectURL(file));
   //     setIsUploaded(false);
-  //     uploadImage(file);
+  //     uploadImageAction(file);
   //   }
   // };
   const handleUpload = (event) => {
@@ -83,7 +83,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => ({
-  uploadImage: (imageFile) => dispatch(uploadImage(imageFile)),
+  uploadImageAction: (imageFile) => dispatch(uploadImageAction(imageFile)),
   removeBackground: (imageFile) => dispatch(removeBackgroundAction(imageFile)),
 });
 
