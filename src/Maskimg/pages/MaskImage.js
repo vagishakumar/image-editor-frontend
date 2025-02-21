@@ -1,11 +1,17 @@
 import { useRef, useState } from "react";
 import { connect } from "react-redux";
 import { Stage, Layer, Image, Line } from "react-konva";
-import {
-  uploadImageAction,
-  uploadMaskImgAction,
-  eraseObjectAction,
-} from "../redux/actions";
+
+import Spinner from "../../Common/spinner";
+
+import { uploadImageAction } from "../../imageUpload/actions";
+import { uploadMaskImgAction } from "../../Maskimg/actions";
+import { eraseObjectAction } from "../../Maskimg/actions";
+import { removeBackgroundAction } from "../../removeBg/actions";
+
+import Buttonvalue from "../../Common/Buttonvalue";
+
+import "./ImageCanvasEditor.css";
 
 const ImageCanvasEditor = ({
   uploadImage,
@@ -13,6 +19,7 @@ const ImageCanvasEditor = ({
   uploadedMaskImgUrl,
   uploadedImageUrl,
   eraseObject,
+  removeBackground,
 }) => {
   const [image, setImage] = useState(null);
   const [lines, setLines] = useState([]);
@@ -53,6 +60,12 @@ const ImageCanvasEditor = ({
     setLines([...lines.slice(0, -1), lastLine]);
   };
 
+  const removebg = () => {
+    console.log("removebg", uploadedImageUrl);
+    if (!uploadedImageUrl) return;
+    removeBackground(uploadedImageUrl);
+  };
+
   const handleMouseUp = () => {
     isDrawing.current = false;
   };
@@ -77,8 +90,8 @@ const ImageCanvasEditor = ({
   const extractImage = () => {
     if (!image || lines.length === 0 || !stageRef.current) return;
 
-    const stage = stageRef.current;
-    const originalCanvas = stage.toCanvas();
+    // const stage = stageRef.current;
+    // const originalCanvas = stage.toCanvas();
 
     // Get the original image dimensions
     const originalWidth = image.naturalWidth;
@@ -142,15 +155,20 @@ const ImageCanvasEditor = ({
   const eraseObj = () => {
     console.log("erase obj called", uploadedMaskImgUrl, uploadedImageUrl);
     eraseObject({
-      maskUrl: uploadedMaskImgUrl.imageUrl,
-      imageUrl: uploadedImageUrl.imageUrl,
+      maskUrl: uploadedMaskImgUrl,
+      imageUrl: uploadedImageUrl,
     });
   };
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-4 space-y-4 image-editor-container">
       <input type="file" onChange={handleImageUpload} className="mb-2" />
-      <div className="border rounded-lg">
+      <div className="border rounded-lg canvas-container">
+        {false && (
+          <div className="spinner-overlay">
+            <Spinner />
+          </div>
+        )}
         <Stage
           ref={stageRef}
           width={500}
@@ -173,32 +191,35 @@ const ImageCanvasEditor = ({
           </Layer>
         </Stage>
       </div>
-      <div className="flex space-x-2">
-        <button
+      <div className="button-group">
+        <Buttonvalue
+          text={isErasing ? "Disable Eraser" : "Enable Eraser"}
+          className="button-yellow"
           onClick={toggleEraser}
-          className="bg-yellow-500 text-white p-2 rounded"
-        >
-          {isErasing ? "Disable Eraser" : "Enable Eraser"}
-        </button>
-        <button
+        />
+        <Buttonvalue
+          text="RemoveBg"
+          className="button-yellow"
+          onClick={removebg}
+        />
+        <Buttonvalue
+          text="Clear All"
+          className="button-gray"
           onClick={clearCanvas}
-          className="bg-gray-500 text-white p-2 rounded"
-        >
-          Clear All
-        </button>
-        <button
+        />
+
+        <Buttonvalue
+          text="Extract Shape"
+          className="button-blue"
           onClick={extractImage}
-          className="bg-blue-500 text-white p-2 rounded"
-        >
-          Extract Shape
-        </button>
-        <button
+        />
+
+        <Buttonvalue
+          text="Erase Selected Image"
+          className="button-blue"
           onClick={eraseObj}
           disabled={!uploadedMaskImgUrl || !uploadedImageUrl}
-          className="bg-blue-500 text-white p-2 rounded"
-        >
-          Erase Selected Image
-        </button>
+        />
       </div>
     </div>
   );
@@ -207,8 +228,8 @@ const ImageCanvasEditor = ({
 const mapStateToProps = (state) => {
   return {
     data: state.data,
-    uploadedMaskImgUrl: state.data.uploadMaskImgUrl,
-    uploadedImageUrl: state.data.uploadImageUrl,
+    uploadedMaskImgUrl: state.maskImg.uploadMaskImgUrl,
+    uploadedImageUrl: state.uploadImg.uploadImageUrl,
   };
 };
 
@@ -216,6 +237,7 @@ const mapDispatchToProps = (dispatch) => ({
   uploadImage: (imageFile) => dispatch(uploadImageAction(imageFile)),
   uploadMaskImg: (imageFile) => dispatch(uploadMaskImgAction(imageFile)),
   eraseObject: (data) => dispatch(eraseObjectAction(data)),
+  removeBackground: (imageUrl) => dispatch(removeBackgroundAction(imageUrl)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ImageCanvasEditor);

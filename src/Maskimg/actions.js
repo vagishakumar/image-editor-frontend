@@ -6,7 +6,7 @@ import { api_url } from "../Common/config";
 // export const uploadMaskImgAction = (imageFile) => {
 //     const formData = new FormData();
 //     formData.append("image", imageFile);
-  
+
 //     return {
 //       type: "UPLOAD_MASK_IMG",
 //       payload: new Promise((resolve, reject) => {
@@ -21,12 +21,12 @@ import { api_url } from "../Common/config";
 //       }),
 //     };
 //   };
-  
+
 //   export const eraseObjectAction = (imageUrl, maskUrl) => {
 //     const formData = new FormData();
 //     formData.append("imageUrl", imageUrl);
 //     formData.append("maskUrl", maskUrl);
-  
+
 //     return {
 //       type: "ERASE_OBJECT",
 //       payload: new Promise((resolve, reject) => {
@@ -70,24 +70,22 @@ export const uploadMaskImgAction = (imageFile) => {
 //   };
 // };
 
-export const eraseObjectAction = (imageUrl, maskUrl) => {
+export const eraseObjectAction = ({ imageUrl, maskUrl }) => {
+  const formData = new FormData();
+  formData.append("imageUrl", imageUrl);
+  formData.append("maskUrl", maskUrl);
+  console.log(imageUrl, maskUrl);
   return {
     type: "ERASE_OBJECT",
     payload: new Promise((resolve, reject) => {
       axios
-        .post(
-          `${api_url}/api/ai/eraser`,
-          { image_url: imageUrl, mask_url: maskUrl },
-          {
-            headers: { "Content-Type": "application/json" }, 
-            responseType: "blob",
-          }
-        )
+        .post(`${api_url}/api/ai/eraser`, formData, {
+          responseType: "blob",
+        })
         .then((response) => {
-          resolve(URL.createObjectURL(response.data)); 
+          resolve(URL.createObjectURL(response.data));
         })
         .catch((error) => {
-          console.error("Erase API failed:", error);
           reject(error);
         });
     }),
