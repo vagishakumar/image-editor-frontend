@@ -1,0 +1,22 @@
+.canvas-editor-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    background-color: white;
+    /* padding: 16px; */
+    /* max-width: 700px; */
+    margin-left: 0 ;
+    width: 700px; 
+  height: 500px; 
+  }
+  
+  .canvas-stage {
+    width: 500px !important; 
+    height: 500px !important;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background-color: #f9fafb;
+  }
+  
