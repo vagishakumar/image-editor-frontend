@@ -60,10 +60,12 @@ export const removeBackgroundAction = (imageFile) => {
   };
 };
 
-export const eraseObjectAction = (imageUrl, maskUrl) => {
+export const eraseObjectAction = ({ imageUrl, maskUrl }) => {
   const formData = new FormData();
   formData.append("imageUrl", imageUrl);
   formData.append("maskUrl", maskUrl);
+
+  console.log({ imageUrl, maskUrl });
 
   return {
     type: "ERASE_OBJECT",

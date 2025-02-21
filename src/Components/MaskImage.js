@@ -74,59 +74,77 @@ const ImageCanvasEditor = ({
     setLines([]);
   };
 
-  // Extract the image inside the drawn shape
   const extractImage = () => {
-    if (!image || lines.length === 0) return;
+    if (!image || lines.length === 0 || !stageRef.current) return;
 
     const stage = stageRef.current;
     const originalCanvas = stage.toCanvas();
 
-    // Create a new canvas with transparency
-    const croppedCanvas = document.createElement("canvas");
-    croppedCanvas.width = originalCanvas.width;
-    croppedCanvas.height = originalCanvas.height;
-    const ctx = croppedCanvas.getContext("2d");
+    // Get the original image dimensions
+    const originalWidth = image.naturalWidth;
+    const originalHeight = image.naturalHeight;
 
-    // Draw the mask
-    ctx.clearRect(0, 0, croppedCanvas.width, croppedCanvas.height);
-    ctx.beginPath();
+    // Maintain aspect ratio while fitting inside the stage (500x400)
+    let maskWidth = 500;
+    let maskHeight = (originalHeight / originalWidth) * 500;
 
-    // Use the first drawn line as the shape boundary
-    const shape = lines[0].points;
-    ctx.moveTo(shape[0], shape[1]);
-    for (let i = 2; i < shape.length; i += 2) {
-      ctx.lineTo(shape[i], shape[i + 1]);
+    if (maskHeight > 400) {
+      maskHeight = 400;
+      maskWidth = (originalWidth / originalHeight) * 400;
     }
-    ctx.closePath();
-    ctx.clip(); // Clip to the drawn shape
 
-    // Draw the image within the clipped region
-    ctx.drawImage(image, 0, 0, croppedCanvas.width, croppedCanvas.height);
+    // Create a new canvas for the mask with correct aspect ratio
+    const maskCanvas = document.createElement("canvas");
+    maskCanvas.width = maskWidth;
+    maskCanvas.height = maskHeight;
+    const maskCtx = maskCanvas.getContext("2d");
 
-    croppedCanvas.toBlob(async (blob) => {
+    // Fill entire mask canvas with black (0,0,0) - Keeps everything unchanged
+    maskCtx.fillStyle = "black";
+    maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
+
+    // Draw the user-defined shape in white (255,255,255) - Marks the area to be removed
+    maskCtx.fillStyle = "white";
+    maskCtx.beginPath();
+
+    lines.forEach((line) => {
+      const points = line.points;
+      if (points.length < 4) return; // Skip invalid lines
+
+      // Scale points to match the mask canvas size
+      maskCtx.moveTo(
+        (points[0] / 500) * maskCanvas.width,
+        (points[1] / 400) * maskCanvas.height
+      );
+
+      for (let i = 2; i < points.length; i += 2) {
+        maskCtx.lineTo(
+          (points[i] / 500) * maskCanvas.width,
+          (points[i + 1] / 400) * maskCanvas.height
+        );
+      }
+      maskCtx.closePath();
+    });
+
+    maskCtx.fill(); // Fill the shape with white (removal area)
+
+    // Convert the mask to a Blob and upload
+    maskCanvas.toBlob((blob) => {
       if (!blob) return;
 
-      // Convert Blob to File
-      const file = new File([blob], "cropped-image.png", { type: "image/png" });
+      const file = new File([blob], "mask-image.png", { type: "image/png" });
 
-      // Send file to API
-      // const formData = new FormData();
-      // formData.append("file", file);
-
+      // Upload or process the mask file
       uploadMaskImg(file);
     }, "image/png");
-
-    // Convert to image and download
-    // const croppedImageURL = croppedCanvas.toDataURL("image/png");
-    // const link = document.createElement("a");
-    // link.href = croppedImageURL;
-    // link.download = "cropped_shape.png";
-    // link.click();
   };
 
   const eraseObj = () => {
     console.log("erase obj called", uploadedMaskImgUrl, uploadedImageUrl);
-    eraseObject(uploadedMaskImgUrl.imageUrl, uploadedImageUrl.imageUrl);
+    eraseObject({
+      maskUrl: uploadedMaskImgUrl.imageUrl,
+      imageUrl: uploadedImageUrl.imageUrl,
+    });
   };
 
   return (
@@ -197,8 +215,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => ({
   uploadImage: (imageFile) => dispatch(uploadImageAction(imageFile)),
   uploadMaskImg: (imageFile) => dispatch(uploadMaskImgAction(imageFile)),
-  eraseObject: (imageUrl, maskUrl) =>
-    dispatch(eraseObjectAction(imageUrl, maskUrl)),
+  eraseObject: (data) => dispatch(eraseObjectAction(data)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ImageCanvasEditor);
