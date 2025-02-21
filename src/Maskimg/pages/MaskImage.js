@@ -2,7 +2,6 @@ import { useRef, useState } from "react";
 import { connect } from "react-redux";
 import { Stage, Layer, Image, Line } from "react-konva";
 
-import Spinner from "../../Common/spinner";
 
 import { uploadImageAction } from "../../imageUpload/actions";
 import { uploadMaskImgAction } from "../../Maskimg/actions";
@@ -12,10 +11,14 @@ import { removeBackgroundAction } from "../../removeBg/actions";
 import Buttonvalue from "../../Common/Buttonvalue";
 
 import "./ImageCanvasEditor.css";
+import CanvasEditor from "../../Common/CanvasEditor";
+import EraseButton from "../components/Erasebutton";
 
 const ImageCanvasEditor = ({
   uploadImage,
+  editedbgimage,
   uploadMaskImg,
+  eraseUrl,
   uploadedMaskImgUrl,
   uploadedImageUrl,
   eraseObject,
@@ -27,7 +30,6 @@ const ImageCanvasEditor = ({
   const isDrawing = useRef(false);
   const stageRef = useRef(null);
 
-  // Handle Image Upload
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     clearCanvas();
@@ -159,16 +161,16 @@ const ImageCanvasEditor = ({
       imageUrl: uploadedImageUrl,
     });
   };
+console.log(editedbgimage)
+const combinedimages = [...editedbgimage, ...eraseUrl];
 
+console.log(combinedimages);
+ 
   return (
     <div className="p-4 space-y-4 image-editor-container">
       <input type="file" onChange={handleImageUpload} className="mb-2" />
       <div className="border rounded-lg canvas-container">
-        {false && (
-          <div className="spinner-overlay">
-            <Spinner />
-          </div>
-        )}
+        
         <Stage
           ref={stageRef}
           width={500}
@@ -193,41 +195,46 @@ const ImageCanvasEditor = ({
       </div>
       <div className="button-group">
         <Buttonvalue
+          text="Clear All"
+          className="button-gray"
+          onClick={clearCanvas}
+        />
+        <Buttonvalue
           text={isErasing ? "Disable Eraser" : "Enable Eraser"}
           className="button-yellow"
           onClick={toggleEraser}
         />
         <Buttonvalue
-          text="RemoveBg"
+          text="Extract Shape"
           className="button-yellow"
+          onClick={extractImage}
+          
+        />
+        
+
+        <Buttonvalue
+          text="RemoveBg"
+          className="button-blue"
           onClick={removebg}
         />
-        <Buttonvalue
-          text="Clear All"
-          className="button-gray"
-          onClick={clearCanvas}
-        />
 
-        <Buttonvalue
-          text="Extract Shape"
-          className="button-blue"
-          onClick={extractImage}
-        />
+        
+        <EraseButton eraseObj={eraseObj} uploadedMaskImgUrl={uploadedMaskImgUrl}  />
 
-        <Buttonvalue
-          text="Erase Selected Image"
-          className="button-blue"
-          onClick={eraseObj}
-          disabled={!uploadedMaskImgUrl || !uploadedImageUrl}
-        />
       </div>
+      
+
+      {combinedimages && <CanvasEditor imageSrc={combinedimages} />}
+
+            
     </div>
   );
 };
 
 const mapStateToProps = (state) => {
   return {
-    data: state.data,
+    eraseUrl:state.maskImg.eraseImgUrl, 
+    editedbgimage:state.removeBg.editedImages,
     uploadedMaskImgUrl: state.maskImg.uploadMaskImgUrl,
     uploadedImageUrl: state.uploadImg.uploadImageUrl,
   };

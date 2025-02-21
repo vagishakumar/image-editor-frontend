@@ -1,5 +1,5 @@
 const initialState = {
-    editedImage: null,
+    editedImages: [],
     status: null,
     error: null,
   };
@@ -12,7 +12,8 @@ const initialState = {
         return { ...state, status: "pending", error: null };
   
       case "REMOVE_BG_FULFILLED":
-        return { ...state, editedImage: action.payload, status: "success", error: null };
+        console.log("hi",action.payload)
+        return { ...state,editedImages: [...state.editedImages || [], { download:action.payload.data.result_url, url: action.payload.resultUrl }], status: "success", error: null };
   
       case "REMOVE_BG_FAILED":
         return { ...state, status: "failed", error: action.payload };

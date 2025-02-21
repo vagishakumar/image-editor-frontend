@@ -61,22 +61,7 @@ const ImageCanvasEditor = ({
       </div>
 
       <div className="button-group">
-        {/* <button onClick={toggleEraser} className="button button-yellow">
-          {isErasing ? "Disable Eraser" : "Enable Eraser"}
-        </button>
-        <button onClick={clearCanvas} className="button button-gray">
-          Clear All
-        </button>
-        <button onClick={extractImage} className="button button-blue">
-          Extract Shape
-        </button>
-        <button
-          onClick={eraseObj}
-          disabled={!uploadedMaskImgUrl || !uploadedImageUrl}
-          className="button button-blue"
-        >
-          Erase Selected Image
-        </button> */}
+        
         <div className="button-group">
           <Buttonvalue
             text={isErasing ? "Disable Eraser" : "Enable Eraser"}

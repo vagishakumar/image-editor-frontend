@@ -1,70 +1,40 @@
-// // src/components/CanvasEditor.js
-// import React from "react";
-// import { Stage, Layer, Image as KonvaImage } from "react-konva";
-// import useImage from "use-image";
 
-// const CanvasEditor = ({ imageSrc }) => {
-//   console.log(imageSrc)
-//   const [image] = useImage(imageSrc);
-// console.log(image)
-//   return (
-//     <Stage width={700} height={700}>
-//       <Layer>{image && <KonvaImage image={image} x={50} y={50} />}</Layer>
-//     </Stage>
-//   );
-// };
-
-// export default CanvasEditor;
-// src/components/CanvasEditor.js
-// import React from "react";
-// import { Stage, Layer, Image as KonvaImage } from "react-konva";
-// import useImage from "use-image";
-// import "./CSS/CanvasEditor.css"; 
-// import Spinner from "./spinner";
-// const CanvasEditor = ({ imageSrc,loading }) => {
-//   console.log(imageSrc);
-//   const [image] = useImage(imageSrc);
-//   console.log(image);
-
-//   return (
-//     <div className="canvas-editor-container">
-//       {loading && (
-//               <div className="spinner-overlay">
-//                 <Spinner />
-//               </div>
-//             )}
-//       <Stage width={700} height={700} className="canvas-stage">
-//         <Layer>{image && <KonvaImage image={image} x={50} y={50} />}</Layer>
-//       </Stage>
-//     </div>
-//   );
-// };
-
-// export default CanvasEditor;
 import React from "react";
-import { Stage, Layer, Image as KonvaImage } from "react-konva";
-import useImage from "use-image";
 import "./CSS/CanvasEditor.css"; 
-import Spinner from "./spinner";
+import "./CSS/spinner.css";
 
 const CanvasEditor = ({ imageSrc }) => {
-  const [image, status] = useImage(imageSrc); 
-
+  if(imageSrc.length===0)return null;
   return (
     <div className="canvas-editor-container">
-      {status === "loading" && (
-        <div className="spinner-overlay">
-          <Spinner />
-        </div>
-      )}
+      <div className="image-grid">
+        {imageSrc.map((imgObj, index) => (
+          <ImageBlock key={index} src={imgObj.url} download={imgObj.download}/>
+        ))}
+      </div>
+    </div>
+  );
+};
 
-      <Stage width={500} height={400} >
-        <Layer>
-          {status === "loaded" && <KonvaImage image={image} width={500} height={400}  />}
-        </Layer>
-      </Stage>
+
+// Component for each image inside a fixed box
+const ImageBlock = ({ src ,download}) => {
+  const handleDownload = () => {
+    window.open(download, "_blank");
+  };
+  return (
+    <div className="image-block">
+      <div className="image-box">
+        <img src={src} alt="Uploaded" className="image" />
+        
+        <div className="button-group-2">
+          <button className="button-1" onClick={handleDownload}>Download</button>
+          <button className="button-1 ">replace</button>
+        </div>
+      </div>
     </div>
   );
 };
 
 export default CanvasEditor;
+
