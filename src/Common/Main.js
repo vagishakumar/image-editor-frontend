@@ -4,9 +4,13 @@ import React, { useState } from "react";
 import CanvasEditor from "./CanvasEditor";
 import MaskImage from "../Maskimg/containers/Maskimgcontainer";
 
-const Main = ({ uploadImageAction, removeBackgroundAction ,uploadedImageurl}) => {
+const Main = ({
+  uploadImageAction,
+  removeBackgroundAction,
+  uploadedImageurl,
+}) => {
   const [imageSrc, setImageSrc] = useState(null);
-  const [image,setImage]=useState(null);
+  const [image, setImage] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [editedImage, setEditedImage] = useState(null);
@@ -35,17 +39,16 @@ const Main = ({ uploadImageAction, removeBackgroundAction ,uploadedImageurl}) =>
   //     reader.readAsDataURL(file);
   //   }
   // };
-  
+
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
-    setImageFile(file)
+    setImageFile(file);
     // clearCanvas();
     if (file) {
       uploadImageAction(file);
-     
     }
-  }
-  
+  };
+
   const processImage = () => {
     if (!imageFile) return;
     removeBackgroundAction(imageFile);
@@ -64,9 +67,9 @@ const Main = ({ uploadImageAction, removeBackgroundAction ,uploadedImageurl}) =>
   return (
     <>
       <div className="App">
-        <h1>AI Background Remover</h1>
+        <h1>AI Image Editor</h1>
         {/* <input type="file" onChange={handleImageUpload} /> */}
-{/* {console.log("hi",uploadedImageurl)} */}
+        {/* {console.log("hi",uploadedImageurl)} */}
         {/* {uploadedImageurl && <CanvasEditor imageSrc={uploadedImageurl} />} */}
         {/* {console.log(editedImage)}
         {editedImage && (
@@ -77,13 +80,12 @@ const Main = ({ uploadImageAction, removeBackgroundAction ,uploadedImageurl}) =>
         )} */}
 
         {/* <button onClick={processImage}>Remove BG</button> */}
-      </div> 
+      </div>
 
-       {/* <button onClick={processImage}disabled={!isuploaded}>Remove BG</button> */}
+      {/* <button onClick={processImage}disabled={!isuploaded}>Remove BG</button> */}
       <MaskImage />
     </>
   );
 };
 
-
-export default (Main);
+export default Main;

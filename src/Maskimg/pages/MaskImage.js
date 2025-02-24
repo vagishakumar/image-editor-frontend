@@ -2,10 +2,13 @@ import { useRef, useState } from "react";
 import { connect } from "react-redux";
 import { Stage, Layer, Image, Line } from "react-konva";
 
-
 import { uploadImageAction } from "../../imageUpload/actions";
 import { uploadMaskImgAction } from "../../Maskimg/actions";
-import { eraseObjectAction } from "../../Maskimg/actions";
+import {
+  eraseObjectAction,
+  generateImgAction,
+  modifyImgAction,
+} from "../../Maskimg/actions";
 import { removeBackgroundAction } from "../../removeBg/actions";
 
 import Buttonvalue from "../../Common/Buttonvalue";
@@ -23,12 +26,17 @@ const ImageCanvasEditor = ({
   uploadedImageUrl,
   eraseObject,
   removeBackground,
+  isLoading,
+  generateImg,
+  modifyImg,
 }) => {
   const [image, setImage] = useState(null);
   const [lines, setLines] = useState([]);
+  const [disable, setDisable] = useState(true);
   const [isErasing, setIsErasing] = useState(false);
   const isDrawing = useRef(false);
   const stageRef = useRef(null);
+  const textRef = useRef(null);
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -63,7 +71,6 @@ const ImageCanvasEditor = ({
   };
 
   const removebg = () => {
-    console.log("removebg", uploadedImageUrl);
     if (!uploadedImageUrl) return;
     removeBackground(uploadedImageUrl);
   };
@@ -155,22 +162,45 @@ const ImageCanvasEditor = ({
   };
 
   const eraseObj = () => {
-    console.log("erase obj called", uploadedMaskImgUrl, uploadedImageUrl);
     eraseObject({
       maskUrl: uploadedMaskImgUrl,
       imageUrl: uploadedImageUrl,
     });
   };
-console.log(editedbgimage)
-const combinedimages = [...editedbgimage, ...eraseUrl];
 
-console.log(combinedimages);
- 
+  const genrateImage = () => {
+    generateImg(textRef.current.value);
+  };
+
+  const modifyImage = () => {
+    modifyImg({
+      maskUrl: uploadedMaskImgUrl,
+      imageUrl: uploadedImageUrl,
+      prompt: textRef.current.value,
+    });
+  };
+
+  const combinedimages = [...editedbgimage, ...eraseUrl];
+
   return (
     <div className="p-4 space-y-4 image-editor-container">
-      <input type="file" onChange={handleImageUpload} className="mb-2" />
+      <div>
+        <input type="file" onChange={handleImageUpload} className="mb-2" />
+        <span>OR</span>
+        <p>Write a prompt to Genrate one!</p>
+        <input
+          ref={textRef}
+          type="text"
+          onChange={(e) => {
+            if (disable !== !e.target.value) setDisable(!e.target.value);
+          }}
+        />
+        <button disabled={disable} onClick={genrateImage}>
+          Generate
+        </button>
+      </div>
+
       <div className="border rounded-lg canvas-container">
-        
         <Stage
           ref={stageRef}
           width={500}
@@ -208,9 +238,7 @@ console.log(combinedimages);
           text="Extract Shape"
           className="button-yellow"
           onClick={extractImage}
-          
         />
-        
 
         <Buttonvalue
           text="RemoveBg"
@@ -218,25 +246,34 @@ console.log(combinedimages);
           onClick={removebg}
         />
 
-        
-        <EraseButton eraseObj={eraseObj} uploadedMaskImgUrl={uploadedMaskImgUrl}  />
+        <Buttonvalue
+          text="Madify"
+          className="button-blue"
+          onClick={modifyImage}
+        />
 
+        <EraseButton
+          isLoading={isLoading}
+          eraseObj={eraseObj}
+          uploadedMaskImgUrl={uploadedMaskImgUrl}
+        />
       </div>
-      
 
       {combinedimages && <CanvasEditor imageSrc={combinedimages} />}
-
-            
     </div>
   );
 };
 
 const mapStateToProps = (state) => {
   return {
-    eraseUrl:state.maskImg.eraseImgUrl, 
-    editedbgimage:state.removeBg.editedImages,
+    eraseUrl: state.maskImg.eraseImgUrl,
+    editedbgimage: state.removeBg.editedImages,
     uploadedMaskImgUrl: state.maskImg.uploadMaskImgUrl,
     uploadedImageUrl: state.uploadImg.uploadImageUrl,
+    isLoading:
+      state.maskImg?.loading ||
+      state.removeBg?.loading ||
+      state.uploadImg?.loading,
   };
 };
 
@@ -244,6 +281,8 @@ const mapDispatchToProps = (dispatch) => ({
   uploadImage: (imageFile) => dispatch(uploadImageAction(imageFile)),
   uploadMaskImg: (imageFile) => dispatch(uploadMaskImgAction(imageFile)),
   eraseObject: (data) => dispatch(eraseObjectAction(data)),
+  generateImg: (prompt) => dispatch(generateImgAction(prompt)),
+  modifyImg: (prompt) => dispatch(modifyImgAction(prompt)),
   removeBackground: (imageUrl) => dispatch(removeBackgroundAction(imageUrl)),
 });
 
