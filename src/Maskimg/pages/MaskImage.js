@@ -1,12 +1,10 @@
 import { useRef, useState } from "react";
 import { connect } from "react-redux";
 import { Stage, Layer, Image, Line } from "react-konva";
-
-
-import { uploadImageAction } from "../../imageUpload/actions";
-import { uploadMaskImgAction } from "../../Maskimg/actions";
-import { eraseObjectAction } from "../../Maskimg/actions";
-import { removeBackgroundAction } from "../../removeBg/actions";
+import { uploadImageAction } from "../actions";
+import { uploadMaskImgAction } from "../actions";
+import { eraseObjectAction } from "../actions";
+import { removeBackgroundAction } from "../actions";
 
 import Buttonvalue from "../../Common/Buttonvalue";
 
@@ -15,12 +13,10 @@ import CanvasEditor from "../../Common/CanvasEditor";
 import EraseButton from "../components/Erasebutton";
 
 const ImageCanvasEditor = ({
-  uploadImage,
-  editedbgimage,
-  uploadMaskImg,
-  eraseUrl,
   uploadedMaskImgUrl,
-  uploadedImageUrl,
+  historyLists,
+  uploadImage,
+  uploadMaskImg,
   eraseObject,
   removeBackground,
 }) => {
@@ -29,12 +25,19 @@ const ImageCanvasEditor = ({
   const [isErasing, setIsErasing] = useState(false);
   const isDrawing = useRef(false);
   const stageRef = useRef(null);
+  const [isUploading, setIsUploading] = useState(false); 
+  const [isExtracting, setIsExtracting] = useState(false); 
+  const [selectedImageUrl, setSelectedImageUrl] = useState(null);
 
+const currentImageUrl=localStorage.getItem('currentimageurl')
+console.log(currentImageUrl)
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     clearCanvas();
-    if (file) {
-      uploadImage(file);
+    if(!file) return;
+    
+      setIsUploading(false); 
+      uploadImage(file).then(() => setIsUploading(true));
       const reader = new FileReader();
       reader.onload = () => {
         const img = new window.Image();
@@ -42,7 +45,7 @@ const ImageCanvasEditor = ({
         img.onload = () => setImage(img);
       };
       reader.readAsDataURL(file);
-    }
+    
   };
 
   // Handle Drawing
@@ -62,10 +65,12 @@ const ImageCanvasEditor = ({
     setLines([...lines.slice(0, -1), lastLine]);
   };
 
+  // const lastItem = historyLists[historyLists.length - 1]; // Traditional way
   const removebg = () => {
-    console.log("removebg", uploadedImageUrl);
-    if (!uploadedImageUrl) return;
-    removeBackground(uploadedImageUrl);
+    // console.log("removebg", uploadedImageUrl);
+    if (!historyLists) return;
+console.log(currentImageUrl)
+    removeBackground(currentImageUrl);
   };
 
   const handleMouseUp = () => {
@@ -146,26 +151,38 @@ const ImageCanvasEditor = ({
     // Convert the mask to a Blob and upload
     maskCanvas.toBlob((blob) => {
       if (!blob) return;
-
       const file = new File([blob], "mask-image.png", { type: "image/png" });
-
-      // Upload or process the mask file
-      uploadMaskImg(file);
+    
+      
+      uploadMaskImg(file).then(() => setIsExtracting(false));
     }, "image/png");
   };
 
   const eraseObj = () => {
-    console.log("erase obj called", uploadedMaskImgUrl, uploadedImageUrl);
+    console.log(currentImageUrl)
+    // console.log("erase obj called", uploadedMaskImgUrl, uploadedImageUrl);
     eraseObject({
       maskUrl: uploadedMaskImgUrl,
-      imageUrl: uploadedImageUrl,
+      imageUrl:currentImageUrl,
     });
   };
-console.log(editedbgimage)
-const combinedimages = [...editedbgimage, ...eraseUrl];
+// const sortedimages = combinedimages.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
-console.log(combinedimages);
- 
+const handleReplace = (imageId) => {
+   console.log("Replacing image with ID:", imageId);
+  const selectedImage = historyLists.find(img => img.id === imageId);
+
+  if (selectedImage) {
+    // console.log("Selected Image URL:", selectedImage.url);
+    setSelectedImageUrl(selectedImage.url);
+    clearCanvas();
+
+    const img = new window.Image();
+    img.src = selectedImage.url;
+    img.onload = () => setImage(img);
+  }
+};
+const sortedHistoryLists = historyLists ? [...historyLists].reverse() : [];
   return (
     <div className="p-4 space-y-4 image-editor-container">
       <input type="file" onChange={handleImageUpload} className="mb-2" />
@@ -198,6 +215,7 @@ console.log(combinedimages);
           text="Clear All"
           className="button-gray"
           onClick={clearCanvas}
+          
         />
         <Buttonvalue
           text={isErasing ? "Disable Eraser" : "Enable Eraser"}
@@ -205,26 +223,27 @@ console.log(combinedimages);
           onClick={toggleEraser}
         />
         <Buttonvalue
-          text="Extract Shape"
+          text="Extract Shape" 
+          className="button-yellow"
+          onClick={()=>{ setIsExtracting(true);extractImage();}}
+          disabled={!isUploading}  />
+          {/* text="Extract Shape"
           className="button-yellow"
           onClick={extractImage}
-          
-        />
+          disabled={!isUploading}  */}
         
-
         <Buttonvalue
           text="RemoveBg"
           className="button-blue"
           onClick={removebg}
+          disabled={!isUploading}
         />
-
-        
-        <EraseButton eraseObj={eraseObj} uploadedMaskImgUrl={uploadedMaskImgUrl}  />
-
+        {/* {console.log("isExtracting",isExtracting)} */}
+        <EraseButton eraseObj={eraseObj} isUploaded={isUploading} isExtracted={isExtracting}  />
       </div>
       
-
-      {combinedimages && <CanvasEditor imageSrc={combinedimages} />}
+            
+      {sortedHistoryLists && <CanvasEditor imageSrc={sortedHistoryLists} onReplace={handleReplace}/>}
 
             
     </div>
@@ -233,10 +252,8 @@ console.log(combinedimages);
 
 const mapStateToProps = (state) => {
   return {
-    eraseUrl:state.maskImg.eraseImgUrl, 
-    editedbgimage:state.removeBg.editedImages,
     uploadedMaskImgUrl: state.maskImg.uploadMaskImgUrl,
-    uploadedImageUrl: state.uploadImg.uploadImageUrl,
+    historyLists:state.editImg.historyList
   };
 };
 

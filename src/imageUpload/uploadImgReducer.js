@@ -13,7 +13,6 @@ const uploadImgReducer = (state = initialState, action) => {
       return { ...state, status: "pending", isloading: true };
 
     case "Upload_Image_FULFILLED":
-      console.log(action.payload);
       return { 
         ...state, 
         uploadImageUrl: action.payload.imageUrl, 
