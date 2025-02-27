@@ -1,0 +1,60 @@
+
+.image-editor-container {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .canvas-container {
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    width: 700px;
+  }
+  
+  .button-group {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .button {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    /* transition: background 0.2s ease-in-out; */
+  }
+  
+  .button-yellow {
+    background-color: #facc15;
+    color: white;
+  }
+  
+  .button-yellow:hover {
+    background-color: #eab308;
+  }
+  
+  .button-gray {
+    background-color: #6b7280;
+    color: white;
+  }
+  
+  .button-gray:hover {
+    background-color: #4b5563;
+  }
+  
+  .button-blue {
+    background-color: #3b82f6;
+    color: white;
+  }
+  
+  .button-blue:hover {
+    background-color: #2563eb;
+  }
+  
