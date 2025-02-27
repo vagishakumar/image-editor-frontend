@@ -1,12 +1,12 @@
 import axios from "axios";
-export const api_url='http://localhost:5000'
+export const api_url = "https://willowy-lollipop-0f9ba9.netlify.app";
 
 // export const apiRequest = (url, method, formData) => {
 //     return new Promise((resolve, reject) => {
 //       const options = {
-//         method, 
+//         method,
 //       };
-      
+
 //       if (method === "POST") {
 //         Object.assign(options,{body:formData})
 //       }
@@ -20,12 +20,17 @@ export const api_url='http://localhost:5000'
 //             return response.blob();
 //           }
 //         })
-//         .then(blob => resolve(URL.createObjectURL(blob))) 
-//         .catch(reject);  
+//         .then(blob => resolve(URL.createObjectURL(blob)))
+//         .catch(reject);
 //     });
 //   };
 
-export const apiRequest = (endpoint, method = "POST", data = {}, options = {}) => {
+export const apiRequest = (
+  endpoint,
+  method = "POST",
+  data = {},
+  options = {}
+) => {
   return new Promise((resolve, reject) => {
     axios({
       url: `${api_url}${endpoint}`,
