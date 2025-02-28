@@ -183,6 +183,7 @@ console.log("first",uploadedMaskImgUrl)
         setIsUploading(true); 
       };
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [generatedurl]);
   const handleReplace = (imageId) => {
     console.log("Replacing image with ID:", imageId);

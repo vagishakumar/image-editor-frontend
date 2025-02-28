@@ -10,7 +10,6 @@ const uploadReducer = (state = initialState, action) => {
     case "Upload_Image_FULFILLED":
       return {
         ...state,
-        // download: `${action.payload.imageUrl}?dl=1`,
         url: action.payload.imageUrl,  
         status: "success",
       };
