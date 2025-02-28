@@ -3,15 +3,47 @@
   --active-color: #d9eafd;
   --disable-color: #bcccdc;
   --svg-color: #9aa6b2;
+  --item-color: #707c89;
+  --heading-color: #56626f;
 }
 
 span {
-  color: #707c89 !important;
+  color: var(--item-color) !important;
 }
 
 svg,
 svg path {
   stroke: var(--svg-color) !important;
+}
+
+input[type="text"] {
+  color: var(--item-color);
+  padding: 5px 10px;
+  border: 1px solid var(--active-color);
+  border-radius: 5px;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus {
+  border-color: var(--disable-color); /* Highlight border on focus */
+}
+
+.custom-file-label {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: var(--active-color);
+  color: var(--item-color);
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.custom-file-label:hover {
+  background-color: #bcccdc;
+  /* background: linear-gradient(to right, #ff7e5f, #feb47b); */
 }
 
 .editor-container {
@@ -97,7 +129,7 @@ svg path {
   /* margin-top: 25px; */
   margin-left: 30px;
   height: 30px;
-  color: #56626f !important;
+  color: var(--heading-color) !important;
 }
 
 .content-container {
@@ -133,8 +165,13 @@ span {
   background-color: var(--active-color);
 }
 
+.menu li.active:hover {
+  filter: brightness(0.96);
+}
+
 .menu li:hover {
-  background-color: #cbc9c9;
+  background-color: var(--active-color);
+  filter: brightness(0.96);
 }
 
 .btn {
@@ -147,7 +184,7 @@ span {
 }
 
 .btn:hover {
-  background: linear-gradient(to right, #ff7e5f, #feb47b);
+  filter: brightness(0.9);
 }
 .prompt {
   margin-top: 10px;

@@ -344,7 +344,17 @@ const Editor = ({
           </div>
           <div className="box-image">
             <div className="button-group">
-              <input type="file" onChange={handleImageUpload} />
+              <label for="fileInput" class="custom-file-label">
+                Choose Image
+              </label>
+              <input
+                type="file"
+                id="fileInput"
+                accept="image/*"
+                hidden
+                onChange={handleImageUpload}
+              />
+              {/* <input type="file" onChange={handleImageUpload} /> */}
             </div>
             <Stage
               ref={stageRef}
