@@ -1,12 +1,21 @@
 import { combineReducers } from "redux";
-import uploadImgReducer from "../imageUpload/uploadImgReducer";
-import maskImgReducer from "../Maskimg/maskImgReducer";
-import removeBgReducer from "../removeBg/removeBgReducer";
+
+import generateImageReducer from "./reducers/generateImageReducer";
+import maskImgReducer from "./reducers/maskImgReducer";
+import modifyImageReducer from "./reducers/modifyImageReducer";
+import eraseObjectReducer from "./reducers/eraseObjectReducer";
+import uploadImgReducer from "./reducers/uploadReducer";
+import removeBgReducer from "./reducers/removeBgReducer";
+import historyListReducer from "./reducers/historyListReducer";
 
 const rootReducer = combineReducers({
-  uploadImg: uploadImgReducer,
   maskImg: maskImgReducer,
+  generateimg: generateImageReducer,
   removeBg: removeBgReducer,
+  eraseObj: eraseObjectReducer,
+  modifyImg: modifyImageReducer,
+  uploadImg: uploadImgReducer,
+  List:historyListReducer
 });
 
 export default rootReducer;
