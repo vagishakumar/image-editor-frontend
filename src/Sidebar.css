@@ -1,0 +1,39 @@
+Sidebar.css
+
+/* Sidebar styles */
+.sidebar {
+    width: 100px;
+    background-color: #28b216;
+    color: white;
+    padding-top: 20px;
+    position: fixed;
+    top: 100px;
+    left: 100px;
+    height: 100px;
+  }
+  
+  .menu {
+    list-style-type: none;
+    padding-left: 0;
+  }
+  
+  .menu li {
+    padding: 15px;
+    cursor: pointer;
+  }
+  
+  .link-style {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 10px;
+  }
+  
+  .menu li:hover {
+    background-color: #555;
+  }
+  
+  .link-style:hover {
+    background-color: #444;
+  }
+  

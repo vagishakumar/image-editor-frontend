@@ -10,7 +10,12 @@ export const uploadMaskImgAction = (imageFile) => {
     payload: apiRequest("/api/ai/upload", "POST", formData),
   };
 };
-
+export const emptyMask = () => {
+ 
+  return {
+    type: "UPLOAD_MASK_IMG",
+  }
+};
 
 export const eraseObjectAction = ({ imageUrl, maskUrl }) => {
   const formData = new FormData();
@@ -52,6 +57,32 @@ export const uploadImageAction = (imageFile) => {
     payload: apiRequest("/api/ai/upload", "POST", formData),
   };
 };
+export const generateImgAction = (prompt) => {
+  const formData = new FormData();
+  formData.append("prompt", prompt);
+
+  return {
+    type: "Generate_IMG",
+    payload: apiRequest("/api/ai/generator", "POST", formData)
+  };
+};
+
+export const modifyImgAction = ({ prompt, imageUrl, maskUrl }) => {
+  const formData = new FormData();
+  formData.append("prompt", prompt);
+  formData.append("imageUrl", imageUrl);
+  formData.append("maskUrl", maskUrl);
+
+  return {
+    type: "Modify_IMG",
+    payload: apiRequest("/api/ai/modifier", "POST", formData)
+  };
+};
+
+export const setUploadedImgUrl = (imageUrl) => ({
+  type: "SET_UPLOADED_IMAGE_URL",
+  payload: imageUrl,
+});
 
 export const resizeImage = (imageFile, width, height) => {
   const formData = new FormData();

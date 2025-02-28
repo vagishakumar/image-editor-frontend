@@ -1,4 +1,4 @@
-body {
+/* body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -10,4 +10,48 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+} */
+/* App.css */
+
+.app-container {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: #333;
+  color: white;
+  padding-top: 20px;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.sidebar li {
+  padding: 10px;
+  cursor: pointer;
+  text-align: center;
+  border-bottom: 1px solid #444;
+}
+
+.sidebar li:hover {
+  background-color: #555;
+}
+
+.content {
+  flex-grow: 1;
+  padding: 20px;
+  font-size: 1.5em;
+  background-color: #f4f4f4;
+  transition: all 0.3s ease;
+}
+
+.content div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
 }

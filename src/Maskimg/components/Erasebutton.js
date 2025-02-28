@@ -1,6 +1,7 @@
 
 import React from "react";
 import "../pages/erasespinner.css"
+import Buttonvalue from "../../Common/Buttonvalue";
 
 const EraseButton = ({ eraseObj,isUploaded,isExtracted }) => {
 
@@ -11,16 +12,17 @@ const Spinnererase = () => {
 };
 
   return (
-    <div className="flex items-center gap-2"> 
-      <button
-className="button button-blue" onClick={eraseObj}
+    // <div> 
+    <>
+      <Buttonvalue
+      onClick={eraseObj}
         disabled={!isUploaded }
-      >
-        Erase Selected Image
-      </button>
+        text="Erase Selected Image"
+      />
+        
+        </>
 
-      {isExtracted && Spinnererase() }
-    </div>
+     
   );
 };
 
