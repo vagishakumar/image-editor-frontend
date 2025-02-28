@@ -1,7 +1,14 @@
 import React, { useRef, useState } from "react";
 import { connect } from "react-redux";
 import { Stage, Layer, Image, Line } from "react-konva";
-import { Wand2, Scissors, Eraser, Edit3 } from "lucide-react";
+import {
+  Wand2,
+  Scissors,
+  Expand,
+  ImageUpscale,
+  Eraser,
+  Edit3,
+} from "lucide-react";
 import {
   uploadImageAction,
   uploadMaskImgAction,
@@ -11,6 +18,11 @@ import {
   modifyImgAction,
   emptyMask,
   setUploadedImgUrl,
+  increaseResolution,
+  removeForeground,
+  blurBg,
+  backgroundgeneration,
+  expandImg,
 } from "../actions";
 import { useEffect } from "react";
 import Buttonvalue from "../../Common/Buttonvalue";
@@ -30,8 +42,13 @@ const Editor = ({
   Lists,
   generatedurl,
   uploadnewImg,
+  incResoln,
+  removeFg,
+  bgblur,
+  bgGenerate,
+  expandimage,
 }) => {
-  const [activeItem, setActiveItem] = useState("generate");
+  const [activeItem, setActiveItem] = useState("Generate");
   const [image, setImage] = useState(null);
   const [lines, setLines] = useState([]);
   const [isErasing, setIsErasing] = useState(false);
@@ -39,30 +56,54 @@ const Editor = ({
   const stageRef = useRef(null);
   const textRef = useRef(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isFileUploading, setIsFileUploading] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [isExtracting, setIsExtracting] = useState(true);
   const [selectedImageUrl, setSelectedImageUrl] = useState(null);
   const [inputValue, setInputValue] = useState("");
+  const [width, setWidth] = useState(0);
+  const [height, setHeight] = useState(0);
+  const [imageWidth, setImageWidth] = useState(0);
+  const [imageHeight, setImageHeight] = useState(0);
+
   const menuItems = [
-    { name: "generate", icon: <Wand2 size={24} color="black" /> },
-    { name: "removebg", icon: <Scissors size={24} color="black" /> },
-    { name: "modify", icon: <Edit3 size={24} color="black" /> },
-    { name: "eraseobj", icon: <Eraser size={24} color="black" /> },
+    { name: "Generate", icon: <Wand2 size={24} color="black" /> },
+    { name: "Background", icon: <Scissors size={24} color="black" /> },
+    { name: "Modify", icon: <Edit3 size={24} color="black" /> },
+    { name: "Eraseobj", icon: <Eraser size={24} color="black" /> },
+    { name: "Enhance", icon: <ImageUpscale size={24} color="black" /> },
+    { name: "Foreground", icon: <Scissors size={24} color="black" /> },
+    { name: "Expand", icon: <Expand size={24} color="black" /> },
   ];
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
     setIsLoading(true);
-    uploadImage(file).then(() => setIsUploading(true), setIsLoading(false));
+    setIsFileUploading(false);
+    uploadImage(file).then(() => {
+      setIsUploading(true);
+      setIsFileUploading(true);
+      setIsLoading(false);
+    });
     const reader = new FileReader();
     reader.onload = () => {
       const img = new window.Image();
       img.src = reader.result;
-      img.onload = () => setImage(img);
-      setIsUploading(true);
+      img.onload = () => {
+        setImage(img);
+        setImageWidth(img.width);
+        setImageHeight(img.height);
+        setWidth(img.width);
+        setHeight(img.height);
+        setIsUploading(true);
+        setIsFileUploading(true);
+        setIsLoading(false);
+      };
     };
     reader.readAsDataURL(file);
   };
+
   const handleChange = (event) => {
     setInputValue(event.target.value);
   };
@@ -71,6 +112,21 @@ const Editor = ({
     isDrawing.current = true;
     const pos = e.target.getStage().getPointerPosition();
     setLines([...lines, { points: [pos.x, pos.y] }]);
+  };
+
+  const handleExpand = () => {
+    if (width > imageWidth && height > imageHeight) {
+      setIsLoading(true);
+      expandimage({
+        imageUrl: uploadImgUrl,
+        originalWidth: imageWidth,
+        originalHeight: imageHeight,
+        expectedWidth: width,
+        expectedHeight: height,
+      }).then(() => setIsLoading(false));
+    } else {
+      alert("Width & Height must be greater than the original image!");
+    }
   };
 
   const handleMouseMove = (e) => {
@@ -84,8 +140,26 @@ const Editor = ({
   const removebg = () => {
     if (!uploadImgUrl) return;
     setIsLoading(true);
-    console.log(uploadImgUrl);
+    // console.log(uploadImgUrl);
     removeBackground(uploadImgUrl).then(() => setIsLoading(false));
+  };
+  const removefg = () => {
+    if (!uploadImgUrl) return;
+    setIsLoading(true);
+    // console.log(uploadImgUrl);
+    removeFg(uploadImgUrl).then(() => setIsLoading(false));
+  };
+  const bgblured = () => {
+    if (!uploadImgUrl) return;
+    setIsLoading(true);
+    // console.log(uploadImgUrl);
+    bgblur(uploadImgUrl).then(() => setIsLoading(false));
+  };
+  const incresolution = () => {
+    console.log(uploadImgUrl);
+    if (!uploadImgUrl) return;
+    setIsLoading(true);
+    incResoln(uploadImgUrl).then(() => setIsLoading(false));
   };
 
   const handleMouseUp = () => {
@@ -188,6 +262,7 @@ const Editor = ({
         setImage(img);
         setIsLoading(false);
         setIsUploading(true);
+        setInputValue("");
       };
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -199,7 +274,8 @@ const Editor = ({
     if (selectedImage) {
       setIsLoading(true);
       setSelectedImageUrl(selectedImage.url);
-      uploadnewImg(selectedImage.url).then(() => setIsLoading(false));
+      uploadnewImg(selectedImage.url);
+      setIsLoading(false);
       emptyMaskImg();
       clearCanvas();
     }
@@ -224,12 +300,22 @@ const Editor = ({
 
   const modifyImage = () => {
     setIsLoading(true);
-
     modifyImg({
       maskUrl: uploadedMaskImgUrl,
       imageUrl: uploadImgUrl,
       prompt: textRef.current.value,
     }).then(() => setIsLoading(false));
+  };
+  console.log("url-out", uploadImgUrl);
+
+  const bggenerated = () => {
+    setIsLoading(true);
+    console.log("url", uploadImgUrl);
+    bgGenerate({
+      imageUrl: uploadImgUrl,
+      prompt: textRef.current.value,
+    }).then(() => setIsLoading(false));
+    setInputValue("");
   };
   const Spinnerarea = () => {
     return <div className="loading loading--full-height"></div>;
@@ -260,7 +346,7 @@ const Editor = ({
             </ul>
           </div>
           <div className="box">
-            {activeItem === "generate" && (
+            {activeItem === "Generate" && (
               <>
                 <div className="button-group">
                   <input
@@ -278,16 +364,34 @@ const Editor = ({
                 </div>
               </>
             )}
-            {activeItem === "removebg" && (
+            {activeItem === "Background" && (
               <div className="button-group">
+                <input
+                  className="prompt"
+                  ref={textRef}
+                  type="text"
+                  placeholder="Enter prompt..."
+                  onChange={handleChange}
+                />
+
+                <Buttonvalue
+                  text="Generate Background"
+                  onClick={bggenerated}
+                  disabled={!isUploading || !inputValue}
+                />
                 <Buttonvalue
                   text="Remove Background"
                   onClick={removebg}
                   disabled={!isUploading}
                 />
+                <Buttonvalue
+                  text="Blur Background"
+                  onClick={bgblured}
+                  disabled={!isUploading}
+                />
               </div>
             )}
-            {activeItem === "modify" && (
+            {activeItem === "Modify" && (
               <>
                 <div className="button-group">
                   <input
@@ -298,7 +402,7 @@ const Editor = ({
                     onChange={handleChange}
                   />
                   <Buttonvalue
-                    text="Extract Shape"
+                    text="Mark Selection"
                     onClick={() => {
                       setIsExtracting(true);
                       extractImage();
@@ -309,7 +413,9 @@ const Editor = ({
                     text="Modify"
                     onClick={modifyImage}
                     disabled={isExtracting}
+                    // tooltipText={isExtracting ? "Mark selection first" : ""}
                   />
+
                   <Buttonvalue text="Clear All" onClick={clearCanvas} />
                   <Buttonvalue
                     text={isErasing ? "Disable Eraser" : "EnaEraser"}
@@ -318,11 +424,11 @@ const Editor = ({
                 </div>
               </>
             )}
-            {activeItem === "eraseobj" && (
+            {activeItem === "Eraseobj" && (
               <>
                 <div className="button-group">
                   <Buttonvalue
-                    text="Extract Shape"
+                    text="Mark Selection"
                     onClick={() => {
                       extractImage();
                     }}
@@ -341,6 +447,57 @@ const Editor = ({
                 </div>
               </>
             )}
+            {activeItem === "Enhance" && (
+              <>
+                <div className="button-group">
+                  <Buttonvalue
+                    text="Increase Resolution"
+                    onClick={incresolution}
+                    disabled={!isUploading}
+                  />
+                </div>
+              </>
+            )}
+            {activeItem === "Foreground" && (
+              <>
+                <div className="button-group">
+                  <Buttonvalue
+                    text="Remove Foreground"
+                    onClick={removefg}
+                    disabled={!isUploading}
+                  />
+                </div>
+              </>
+            )}
+            {activeItem === "Expand" && (
+              <>
+                <div className="button-group">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Width
+                  </label>
+                  <input
+                    type="number"
+                    value={width}
+                    onChange={(e) => setWidth(Number(e.target.value))}
+                    disabled={!isUploading}
+                  />
+
+                  <label className="block text-sm font-medium text-gray-700 mt-2">
+                    Height
+                  </label>
+                  <input
+                    type="number"
+                    value={height}
+                    onChange={(e) => setHeight(Number(e.target.value))}
+                    disabled={!isUploading}
+                  />
+
+                  <button onClick={handleExpand} disabled={!isUploading}>
+                    Expand
+                  </button>
+                </div>
+              </>
+            )}
           </div>
           <div className="box-image">
             <div className="button-group">
@@ -348,6 +505,7 @@ const Editor = ({
                 Choose Image
               </label>
               <input
+                disabled={!isFileUploading}
                 type="file"
                 id="fileInput"
                 accept="image/*"
@@ -398,12 +556,17 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => ({
   uploadnewImg: (imageUrl) => dispatch(setUploadedImgUrl(imageUrl)),
+  incResoln: (imageUrl) => dispatch(increaseResolution(imageUrl)),
+  removeFg: (imageUrl) => dispatch(removeForeground(imageUrl)),
+  bgblur: (imageUrl) => dispatch(blurBg(imageUrl)),
   emptyMaskImg: () => dispatch(emptyMask()),
   uploadImage: (imageFile) => dispatch(uploadImageAction(imageFile)),
   uploadMaskImg: (imageFile) => dispatch(uploadMaskImgAction(imageFile)),
   eraseObject: (data) => dispatch(eraseObjectAction(data)),
+  bgGenerate: (data) => dispatch(backgroundgeneration(data)),
   removeBackground: (imageUrl) => dispatch(removeBackgroundAction(imageUrl)),
   generateImg: (prompt) => dispatch(generateImgAction(prompt)),
-  modifyImg: (prompt) => dispatch(modifyImgAction(prompt)),
+  modifyImg: (data) => dispatch(modifyImgAction(data)),
+  expandimage: (data) => dispatch(expandImg(data)),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Editor);

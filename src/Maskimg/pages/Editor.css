@@ -186,6 +186,9 @@ span {
 .btn:hover {
   filter: brightness(0.9);
 }
+.btn:disabled{
+  background:none;
+}
 .prompt {
   margin-top: 10px;
   width: 70%;
@@ -202,6 +205,8 @@ span {
   color: white;
   font-size: 18px;
   font-weight: bold;
+  width: 130px;
+  height: 25px;
 }
 
 .loading {

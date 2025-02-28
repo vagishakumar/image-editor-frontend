@@ -22,9 +22,8 @@ export const eraseObjectAction = ({ imageUrl, maskUrl }) => {
 
   return {
     type: "ERASE_OBJECT",
-    payload: apiRequest("/api/ai/eraser", "POST", formData).then((response) => {
-      return response;
-    }),
+    payload: apiRequest("/api/ai/eraser", "POST", formData)
+  
   };
 };
 export const removeBackgroundAction = (imageInput) => {
@@ -39,12 +38,7 @@ export const removeBackgroundAction = (imageInput) => {
 
   return {
     type: "REMOVE_BG",
-    payload: apiRequest("/api/ai/removebg", "POST", requestData).then(
-      (response) => {
-        // console.log(response);
-        return response;
-      }
-    ),
+    payload: apiRequest("/api/ai/removebg", "POST", requestData)
   };
 };
 export const uploadImageAction = (imageFile) => {
@@ -52,8 +46,35 @@ export const uploadImageAction = (imageFile) => {
   formData.append("image", imageFile);
 
   return {
-    type: "Upload_Image",
+    type: "UPLOAD_IMG",
     payload: apiRequest("/api/ai/upload", "POST", formData),
+  };
+};
+export const increaseResolution = (imageUrl) => {
+  const formData = new FormData();
+  formData.append("imageUrl", imageUrl);
+    console.log("imageFile",imageUrl)
+  return {
+    type: "INCREASE_RESOLUTION_IMG",
+    payload: apiRequest("/api/ai/increaseResolution", "POST", formData),
+  };
+};
+export const removeForeground = (imageUrl) => {
+  const formData = new FormData();
+  formData.append("imageUrl", imageUrl);
+
+  return {
+    type: "REMOVE_FOREGROUND_IMG",
+    payload: apiRequest("/api/ai/removeForeground", "POST", formData),
+  };
+};
+export const blurBg = (imageUrl) => {
+  const formData = new FormData();
+  formData.append("imageUrl", imageUrl);
+
+  return {
+    type: "BLUR_BG_IMG",
+    payload: apiRequest("/api/ai/blurBg", "POST", formData),
   };
 };
 export const generateImgAction = (prompt) => {
@@ -61,7 +82,7 @@ export const generateImgAction = (prompt) => {
   formData.append("prompt", prompt);
 
   return {
-    type: "Generate_IMG",
+    type: "GENERATE_IMG",
     payload: apiRequest("/api/ai/generator", "POST", formData),
   };
 };
@@ -73,13 +94,36 @@ export const modifyImgAction = ({ prompt, imageUrl, maskUrl }) => {
   formData.append("maskUrl", maskUrl);
 
   return {
-    type: "Modify_IMG",
+    type: "MODIFY_IMG",
     payload: apiRequest("/api/ai/modifier", "POST", formData),
+  };
+};
+export const expandImg = ({ imageUrl, originalWidth,originalHeight,expectedWidth,expectedHeight }) => {
+  const formData = new FormData();
+  formData.append("imageUrl", imageUrl);
+  formData.append("originalWidth", originalWidth);
+  formData.append("originalHeight", originalHeight);
+  formData.append("expectedWidth", expectedWidth);
+  formData.append("expectedHeight", expectedHeight);
+
+  return {
+    type: "EXPAND_IMG",
+    payload: apiRequest("/api/ai/expand", "POST", formData),
+  };
+};
+export const backgroundgeneration = ({ prompt, imageUrl }) => {
+  const formData = new FormData();
+  formData.append("prompt", prompt);
+  formData.append("imageUrl", imageUrl);
+
+  return {
+    type: "BG_GENERATION_IMG",
+    payload: apiRequest("/api/ai/backgroundGen", "POST", formData),
   };
 };
 
 export const setUploadedImgUrl = (imageUrl) => ({
-  type: "SET_UPLOADED_IMAGE_URL",
+  type: "SET_UPLOADED_IMG_URL",
   payload: imageUrl,
 });
 
