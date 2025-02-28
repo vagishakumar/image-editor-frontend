@@ -1,5 +1,5 @@
 import axios from "axios";
-export const api_url = "https://image-editor-socialpilot-api.netlify.app/";
+export const api_url = "https://image-editor-socialpilot-api.netlify.app";
 
 export const apiRequest = (
   endpoint,
