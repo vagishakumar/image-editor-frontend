@@ -1,6 +1,6 @@
 # AI-Powered Image Editor - Frontend
 
-This is the frontend of an AI-powered image editor built with **React**. The application provides users with advanced image editing features, leveraging AI for tasks like background removal, image enhancement, object detection, and style transfer.
+This is the frontend of an **AI-powered image editor** built with **React**. The application provides users with advanced image editing features, leveraging AI for tasks like **background removal**, **image enhancement**, **object detection**, and **style transfer**.
 
 ## Key Features
 
@@ -12,4 +12,18 @@ This is the frontend of an AI-powered image editor built with **React**. The app
 - **Custom Filters & Adjustments** – Fine-tune brightness, contrast, saturation, and more.
 - **Integration with Backend** – Communicates with the Node.js backend to process AI-powered transformations.
 
-The frontend is designed to be **scalable, responsive, and efficient**, ensuring a smooth editing experience for users.
+The frontend is designed to be **scalable**, **responsive**, and **efficient**, ensuring a smooth editing experience for users.
+
+## Tech Stack
+
+- **React.js** (Frontend Framework)
+- **Redux** (State Management)
+- **Axios** (HTTP Client)
+- **Bootstrap & React-Bootstrap** (UI Components)
+- **Konva & React-Konva** (Canvas Manipulation)
+- **Lucide-React** (Icons)
+- **SCSS** (Styling)
+
+## License
+
+This project is licensed under the **ISC License**.
