@@ -1,16 +1,14 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import MainContainer from "./Common/MainContainer"
-import reportWebVitals from './reportWebVitals';
-import {Provider} from 'react-redux'
-import store from './redux/store';
-const root = ReactDOM.createRoot(document.getElementById('root'));
+import React from "react";
+import ReactDOM from "react-dom/client";
+import Editor from "./Maskimg/pages/Editor";
+import reportWebVitals from "./reportWebVitals";
+import { Provider } from "react-redux";
+import store from "./redux/store";
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-    <MainContainer/>
+      <Editor />
     </Provider>
   </React.StrictMode>
 );
