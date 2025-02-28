@@ -14,7 +14,7 @@ const historyListReducer = (state = initialState, action) => {
         timestamp: new Date().toISOString(),
       }, ...(state.historyList || [])],
     };
-    case "Modify_IMG_FULFILLED": 
+    case "MODIFY_IMG_FULFILLED": 
      return {
       ...state,
       historyList: [{id:uuidv4(),
@@ -23,14 +23,62 @@ const historyListReducer = (state = initialState, action) => {
         timestamp: new Date().toISOString(),
       }, ...(state.historyList || [])],
     };
-    case "Generate_IMG_FULFILLED": 
-    console.log("in history")
-
+    case "GENERATE_IMG_FULFILLED": 
+    
      return {
       ...state,
       historyList: [{id:uuidv4(),
         download: action.payload.data.result[0].urls[0],
         url: action.payload.resultUrl,
+        timestamp: new Date().toISOString(),
+      }, ...(state.historyList || [])],
+    };
+    case "BG_GENERATION_IMG_FULFILLED": 
+    
+     return {
+      ...state,
+      historyList: [{id:uuidv4(),
+        download: action.payload.data.result[0],
+          url: action.payload.resultUrl,
+        timestamp: new Date().toISOString(),
+      }, ...(state.historyList || [])],
+    };
+    case "EXPAND_IMG_FULFILLED": 
+     return {
+      ...state,
+      historyList: [{id:uuidv4(),
+        download: action.payload.data.result_url,
+          url: action.payload.resultUrl,
+        timestamp: new Date().toISOString(),
+      }, ...(state.historyList || [])],
+    };
+    case "BLUR_BG_IMG_FULFILLED": 
+    
+     return {
+      ...state,
+      historyList: [{id:uuidv4(),
+        download: action.payload.data.result_url,
+        url: action.payload.resultUrl,
+        timestamp: new Date().toISOString(),
+      }, ...(state.historyList || [])],
+    };
+    case "INCREASE_RESOLUTION_IMG_FULFILLED": 
+    
+     return {
+      ...state,
+      historyList: [{id:uuidv4(),
+        download: action.payload.data.result_url,
+          url: action.payload.resultUrl,
+        timestamp: new Date().toISOString(),
+      }, ...(state.historyList || [])],
+    };
+    case "REMOVE_FOREGROUND_IMG_FULFILLED": 
+    
+     return {
+      ...state,
+      historyList: [{id:uuidv4(),
+        download: action.payload.data.result_url,
+          url: action.payload.resultUrl,
         timestamp: new Date().toISOString(),
       }, ...(state.historyList || [])],
     };
@@ -43,11 +91,10 @@ const historyListReducer = (state = initialState, action) => {
         timestamp: new Date().toISOString(),
       }, ...(state.historyList || [])],
     };
-    case "Upload_Image_FULFILLED":
+    case "UPLOAD_IMG_FULFILLED":
       return {
         ...state,
         historyList: [{id:uuidv4(),
-          // download: `${action.payload.imageUrl}?dl=1`,
           url: action.payload.imageUrl,
           timestamp: new Date().toISOString(),
         }, ...(state.historyList|| [])],

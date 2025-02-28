@@ -132,6 +132,9 @@ span {
 .btn:hover {
   background: linear-gradient(to right, #ff7e5f, #feb47b);
 }
+.btn:disabled{
+  background:none;
+}
 .prompt {
   margin-top: 10px;
   width: 70%;
@@ -148,6 +151,8 @@ span {
   color: white;
   font-size: 18px;
   font-weight: bold;
+  width: 130px;
+  height: 25px;
 }
 
 .loading {
