@@ -1,4 +1,3 @@
-
 import { apiRequest } from "../Common/config";
 
 export const uploadMaskImgAction = (imageFile) => {
@@ -11,10 +10,9 @@ export const uploadMaskImgAction = (imageFile) => {
   };
 };
 export const emptyMask = () => {
- 
   return {
     type: "UPLOAD_MASK_IMG",
-  }
+  };
 };
 
 export const eraseObjectAction = ({ imageUrl, maskUrl }) => {
@@ -24,16 +22,16 @@ export const eraseObjectAction = ({ imageUrl, maskUrl }) => {
 
   return {
     type: "ERASE_OBJECT",
-    payload: apiRequest("/api/ai/eraser", "POST", formData)
-      .then((response) =>{
-         return response})
+    payload: apiRequest("/api/ai/eraser", "POST", formData).then((response) => {
+      return response;
+    }),
   };
 };
 export const removeBackgroundAction = (imageInput) => {
   let requestData;
 
   if (typeof imageInput === "string") {
-    requestData = { imageUrl: imageInput }; 
+    requestData = { imageUrl: imageInput };
   } else {
     requestData = new FormData();
     requestData.append("image", imageInput);
@@ -41,11 +39,12 @@ export const removeBackgroundAction = (imageInput) => {
 
   return {
     type: "REMOVE_BG",
-    payload: apiRequest("/api/ai/removebg", "POST", requestData)
-      .then((response) => {
-        // console.log(response); 
+    payload: apiRequest("/api/ai/removebg", "POST", requestData).then(
+      (response) => {
+        // console.log(response);
         return response;
-      }),
+      }
+    ),
   };
 };
 export const uploadImageAction = (imageFile) => {
@@ -63,7 +62,7 @@ export const generateImgAction = (prompt) => {
 
   return {
     type: "Generate_IMG",
-    payload: apiRequest("/api/ai/generator", "POST", formData)
+    payload: apiRequest("/api/ai/generator", "POST", formData),
   };
 };
 
@@ -75,7 +74,7 @@ export const modifyImgAction = ({ prompt, imageUrl, maskUrl }) => {
 
   return {
     type: "Modify_IMG",
-    payload: apiRequest("/api/ai/modifier", "POST", formData)
+    payload: apiRequest("/api/ai/modifier", "POST", formData),
   };
 };
 

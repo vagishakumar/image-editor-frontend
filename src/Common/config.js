@@ -1,8 +1,12 @@
 import axios from "axios";
-export const api_url='http://localhost:5000'
+export const api_url = "https://image-editor-socialpilot-api.netlify.app/";
 
-
-export const apiRequest = (endpoint, method = "POST", data = {}, options = {}) => {
+export const apiRequest = (
+  endpoint,
+  method = "POST",
+  data = {},
+  options = {}
+) => {
   return new Promise((resolve, reject) => {
     axios({
       url: `${api_url}${endpoint}`,
