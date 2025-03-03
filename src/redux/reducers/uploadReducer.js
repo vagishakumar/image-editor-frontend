@@ -3,18 +3,20 @@ const initialState = {
 };
 
 const uploadReducer = (state = initialState, action) => {
+
   switch (action.type) {
-    case "Upload_Image_PENDING":
+    case "UPLOAD_IMG_PENDING":
       return { ...state, status: "pending" };
-    case "Upload_Image_FULFILLED":
+    case "UPLOAD_IMG_FULFILLED":
       return {
         ...state,
         url: action.payload.imageUrl,
         status: "success",
       };
-    case "Upload_Image_FAILED":
-      return { ...state, status: "failed" };
-    case "SET_UPLOADED_IMAGE_URL":
+    case "UPLOAD_IMG_FAILED":
+      return { ...state, status: "failed"};
+    case "SET_UPLOADED_IMG_URL":
+      
       return { ...state, url: action.payload };
     default:
       return state;
