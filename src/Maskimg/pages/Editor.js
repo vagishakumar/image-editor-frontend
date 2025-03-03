@@ -1,8 +1,15 @@
 import React, { useRef, useState } from "react";
 import { connect } from "react-redux";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import { Stage, Layer, Image, Line } from "react-konva";
-import { Wand2, Scissors,Expand,ImageUpscale , Eraser, Edit3 } from "lucide-react";
+import {
+  Wand2,
+  Scissors,
+  Expand,
+  ImageUpscale,
+  Eraser,
+  Edit3,
+} from "lucide-react";
 import {
   uploadImageAction,
   uploadMaskImgAction,
@@ -16,7 +23,7 @@ import {
   removeForeground,
   blurBg,
   backgroundgeneration,
-  expandImg
+  expandImg,
 } from "../actions";
 import { useEffect } from "react";
 import Buttonvalue from "../../Common/Buttonvalue";
@@ -56,51 +63,47 @@ const Editor = ({
   const [selectedImageUrl, setSelectedImageUrl] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const [width, setWidth] = useState(0);
-const [height, setHeight] = useState(0);
-const [imageWidth, setImageWidth] = useState(0);
-const [imageHeight, setImageHeight] = useState(0);
+  const [height, setHeight] = useState(0);
+  const [imageWidth, setImageWidth] = useState(0);
+  const [imageHeight, setImageHeight] = useState(0);
 
   const menuItems = [
     { name: "Generate", icon: <Wand2 size={24} color="black" /> },
     { name: "Background", icon: <Scissors size={24} color="black" /> },
     { name: "Modify", icon: <Edit3 size={24} color="black" /> },
     { name: "Eraseobj", icon: <Eraser size={24} color="black" /> },
-    { name: "Enhance", icon: <ImageUpscale  size={24} color="black" /> },
-    { name: "Foreground", icon: <Scissors  size={24} color="black" /> },
-    { name: "Expand", icon: <Expand   size={24} color="black" /> },
+    { name: "Enhance", icon: <ImageUpscale size={24} color="black" /> },
+    { name: "Foreground", icon: <Scissors size={24} color="black" /> },
+    { name: "Expand", icon: <Expand size={24} color="black" /> },
   ];
-const handleImageUpload = (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  setIsLoading(true);
-  setIsFileUploading(false);
-  uploadImage(file)
-  .then(() => {
-    setIsUploading(true);
-    setIsFileUploading(true);
-    setIsLoading(false);
-  })
-  const reader = new FileReader();
-  reader.onload = () => {
-    const img = new window.Image();
-    img.src = reader.result;
-    img.onload = () => {
-      setImage(img);
-      setImageWidth(img.width);  
-      setImageHeight(img.height); 
-      setWidth(img.width );   
-      setHeight(img.height); 
+    setIsLoading(true);
+    setIsFileUploading(false);
+    uploadImage(file).then(() => {
       setIsUploading(true);
       setIsFileUploading(true);
       setIsLoading(false);
+    });
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new window.Image();
+      img.src = reader.result;
+      img.onload = () => {
+        setImage(img);
+        setImageWidth(img.width);
+        setImageHeight(img.height);
+        setWidth(img.width);
+        setHeight(img.height);
+        setIsUploading(true);
+        setIsFileUploading(true);
+        setIsLoading(false);
+      };
     };
+    reader.readAsDataURL(file);
   };
-  reader.readAsDataURL(file);
-
-  
-    
-};
 
   const handleChange = (event) => {
     setInputValue(event.target.value);
@@ -111,23 +114,22 @@ const handleImageUpload = (e) => {
     const pos = e.target.getStage().getPointerPosition();
     setLines([...lines, { points: [pos.x, pos.y] }]);
   };
-  
-  
+
   const handleExpand = () => {
     if (width > imageWidth && height > imageHeight) {
       setIsLoading(true);
       expandimage({
         imageUrl: uploadImgUrl,
-        originalWidth:imageWidth,
-        originalHeight:imageHeight,
-        expectedWidth:width,
-        expectedHeight:height,
-      }).then(()=>setIsLoading(false))
+        originalWidth: imageWidth,
+        originalHeight: imageHeight,
+        expectedWidth: width,
+        expectedHeight: height,
+      }).then(() => setIsLoading(false));
     } else {
       alert("Width & Height must be greater than the original image!");
     }
   };
-  
+
   const handleMouseMove = (e) => {
     if (!isDrawing.current || isErasing) return;
     const stage = e.target.getStage();
@@ -150,7 +152,8 @@ const handleImageUpload = (e) => {
     if (!uploadImgUrl) return;
     setIsLoading(true);
     bgblur(uploadImgUrl).then(() => setIsLoading(false));
-  };const incresolution = () => {
+  };
+  const incresolution = () => {
     if (!uploadImgUrl) return;
     setIsLoading(true);
     incResoln(uploadImgUrl).then(() => setIsLoading(false));
@@ -235,6 +238,7 @@ const handleImageUpload = (e) => {
       );
     }, "image/png");
   };
+
   const eraseObj = () => {
     setIsLoading(true);
     eraseObject({
@@ -252,7 +256,7 @@ const handleImageUpload = (e) => {
         setImage(img);
         setIsLoading(false);
         setIsUploading(true);
-        setInputValue("")
+        setInputValue("");
       };
     }
   }, [generatedurl]);
@@ -263,7 +267,7 @@ const handleImageUpload = (e) => {
       setIsLoading(true);
       setSelectedImageUrl(selectedImage.url);
       uploadnewImg(selectedImage.url);
-       setIsLoading(false)
+      setIsLoading(false);
       emptyMaskImg();
       clearCanvas();
     }
@@ -299,8 +303,7 @@ const handleImageUpload = (e) => {
       imageUrl: uploadImgUrl,
       prompt: textRef.current.value,
     }).then(() => setIsLoading(false));
-    setInputValue("")
-
+    setInputValue("");
   };
   const Spinnerarea = () => {
     return <div className="loading loading--full-height"></div>;
@@ -346,25 +349,24 @@ const handleImageUpload = (e) => {
                     onClick={generateImage}
                     disabled={!inputValue}
                   />
-                  
                 </div>
               </>
             )}
             {activeItem === "Background" && (
               <div className="button-group">
                 <input
-                    className="prompt"
-                    ref={textRef}
-                    type="text"
-                    placeholder="Enter prompt..."
-                    onChange={handleChange}
-                  />
+                  className="prompt"
+                  ref={textRef}
+                  type="text"
+                  placeholder="Enter prompt..."
+                  onChange={handleChange}
+                />
 
-                  <Buttonvalue
-                    text="Generate Background"
-                    onClick={bggenerated}
-                    disabled={!isUploading||!inputValue }
-                  />
+                <Buttonvalue
+                  text="Generate Background"
+                  onClick={bggenerated}
+                  disabled={!isUploading || !inputValue}
+                />
                 <Buttonvalue
                   text="Remove Background"
                   onClick={removebg}
@@ -395,12 +397,12 @@ const handleImageUpload = (e) => {
                     }}
                     disabled={!isUploading}
                   />
-                  <Buttonvalue 
-                text="Modify" 
-                onClick={modifyImage} 
-                disabled={isExtracting} 
-                // tooltipText={isExtracting ? "Mark selection first" : ""} 
-                />
+                  <Buttonvalue
+                    text="Modify"
+                    onClick={modifyImage}
+                    disabled={isExtracting}
+                    // tooltipText={isExtracting ? "Mark selection first" : ""}
+                  />
 
                   <Buttonvalue text="Clear All" onClick={clearCanvas} />
                   <Buttonvalue
@@ -436,7 +438,11 @@ const handleImageUpload = (e) => {
             {activeItem === "Enhance" && (
               <>
                 <div className="button-group">
-                  <Buttonvalue text="Increase Resolution" onClick={incresolution} disabled={!isUploading}/>
+                  <Buttonvalue
+                    text="Increase Resolution"
+                    onClick={incresolution}
+                    disabled={!isUploading}
+                  />
                 </div>
               </>
             )}
@@ -452,40 +458,42 @@ const handleImageUpload = (e) => {
               </>
             )}
             {activeItem === "Expand" && (
-  <>
-    <div className="button-group">
-      <label className="block text-sm font-medium text-gray-700">Width</label>
-      <input
-        type="number"
-        value={width}
-        onChange={(e) => setWidth(Number(e.target.value))}
-        disabled={!isUploading}
-      />
+              <>
+                <div className="button-group">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Width
+                  </label>
+                  <input
+                    type="number"
+                    value={width}
+                    onChange={(e) => setWidth(Number(e.target.value))}
+                    disabled={!isUploading}
+                  />
 
-      <label className="block text-sm font-medium text-gray-700 mt-2">Height</label>
-      <input
-        type="number"
-        value={height}
-        onChange={(e) => setHeight(Number(e.target.value))}
-        disabled={!isUploading}
-      />
+                  <label className="block text-sm font-medium text-gray-700 mt-2">
+                    Height
+                  </label>
+                  <input
+                    type="number"
+                    value={height}
+                    onChange={(e) => setHeight(Number(e.target.value))}
+                    disabled={!isUploading}
+                  />
 
-      <button
-      onClick={handleExpand}
-      disabled={!isUploading }
-    >
-      Expand
-    </button>
-    </div>
-
-    
-  </>
-)}
-
+                  <button onClick={handleExpand} disabled={!isUploading}>
+                    Expand
+                  </button>
+                </div>
+              </>
+            )}
           </div>
           <div className="box-image">
             <div className="button-group">
-              <input type="file" onChange={handleImageUpload} disabled={!isFileUploading} />
+              <input
+                type="file"
+                onChange={handleImageUpload}
+                disabled={!isFileUploading}
+              />
             </div>
             <Stage
               ref={stageRef}
@@ -528,7 +536,6 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => ({
-
   uploadnewImg: (imageUrl) => dispatch(setUploadedImgUrl(imageUrl)),
   incResoln: (imageUrl) => dispatch(increaseResolution(imageUrl)),
   removeFg: (imageUrl) => dispatch(removeForeground(imageUrl)),
