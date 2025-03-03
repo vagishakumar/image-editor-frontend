@@ -1,7 +1,9 @@
 .canvas-editor-container {
   margin-top: 30px;
   margin-left: 25px;
-  height: 1000px;
+  min-height: 300px;
+  height: auto;
+  overflow: visible;
   width: 1400px;
   padding: 20px;
   justify-content: center;

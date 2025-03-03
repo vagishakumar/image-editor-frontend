@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import useImage from "use-image";
 import { Stage, Layer, Image, Line } from "react-konva";
 import {
   Wand2,
@@ -9,6 +10,10 @@ import {
   ImageUpscale,
   Eraser,
   Edit3,
+  ZoomIn,
+  ZoomOut,
+  Trash,
+  Ban,
 } from "lucide-react";
 import {
   uploadImageAction,
@@ -29,7 +34,7 @@ import { useEffect } from "react";
 import Buttonvalue from "../../Common/Buttonvalue";
 import "./Editor.css";
 import CanvasEditor from "../../Common/CanvasEditor";
-
+import bg from "../../Common/transparent.png";
 const Editor = ({
   uploadedMaskImgUrl,
   emptyMaskImg,
@@ -55,17 +60,16 @@ const Editor = ({
   const [isErasing, setIsErasing] = useState(false);
   const isDrawing = useRef(false);
   const stageRef = useRef(null);
-  const textRef = useRef(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isFileUploading, setIsFileUploading] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [isExtracting, setIsExtracting] = useState(true);
   const [selectedImageUrl, setSelectedImageUrl] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
   const [imageWidth, setImageWidth] = useState(0);
   const [imageHeight, setImageHeight] = useState(0);
+  const [scalePercentage, setScalePercentage] = useState(20);
 
   const menuItems = [
     { name: "Generate", icon: <Wand2 size={24} color="black" /> },
@@ -82,11 +86,12 @@ const Editor = ({
 
     setIsLoading(true);
     setIsFileUploading(false);
-    uploadImage(file).then(() => {
-      setIsUploading(true);
-      setIsFileUploading(true);
-      setIsLoading(false);
-    });
+    uploadImage(file)
+      .then(() => {
+        setIsUploading(true);
+        setIsFileUploading(true);
+      })
+      .finally(() => setIsLoading(false));
     const reader = new FileReader();
     reader.onload = () => {
       const img = new window.Image();
@@ -104,6 +109,7 @@ const Editor = ({
     };
     reader.readAsDataURL(file);
   };
+  const [bgImage] = useImage(bg);
 
   const handleChange = (event) => {
     setInputValue(event.target.value);
@@ -124,7 +130,7 @@ const Editor = ({
         originalHeight: imageHeight,
         expectedWidth: width,
         expectedHeight: height,
-      }).then(() => setIsLoading(false));
+      }).finally(() => setIsLoading(false));
     } else {
       alert("Width & Height must be greater than the original image!");
     }
@@ -141,7 +147,7 @@ const Editor = ({
   const removebg = () => {
     if (!uploadImgUrl) return;
     setIsLoading(true);
-    removeBackground(uploadImgUrl).then(() => setIsLoading(false));
+    removeBackground(uploadImgUrl).finally(() => setIsLoading(false));
   };
   const removefg = () => {
     if (!uploadImgUrl) return;
@@ -151,12 +157,12 @@ const Editor = ({
   const bgblured = () => {
     if (!uploadImgUrl) return;
     setIsLoading(true);
-    bgblur(uploadImgUrl).then(() => setIsLoading(false));
+    bgblur(uploadImgUrl).finally(() => setIsLoading(false));
   };
   const incresolution = () => {
     if (!uploadImgUrl) return;
     setIsLoading(true);
-    incResoln(uploadImgUrl).then(() => setIsLoading(false));
+    incResoln(uploadImgUrl).finally(() => setIsLoading(false));
   };
 
   const handleMouseUp = () => {
@@ -232,10 +238,7 @@ const Editor = ({
     maskCanvas.toBlob((blob) => {
       if (!blob) return;
       const file = new File([blob], "mask-image.png", { type: "image/png" });
-      uploadMaskImg(file).then(
-        () => setIsExtracting(false),
-        setIsLoading(false)
-      );
+      uploadMaskImg(file).finally(() => setIsLoading(false));
     }, "image/png");
   };
 
@@ -244,7 +247,8 @@ const Editor = ({
     eraseObject({
       maskUrl: uploadedMaskImgUrl,
       imageUrl: uploadImgUrl,
-    }).then(() => setIsLoading(false), setIsExtracting(false));
+    }).finally(() => setIsLoading(false));
+    emptyMaskImg();
   };
   useEffect(() => {
     if (generatedurl) {
@@ -254,7 +258,10 @@ const Editor = ({
       img.onload = () => {
         clearCanvas();
         setImage(img);
-        setIsLoading(false);
+        setImageWidth(img.width);
+        setImageHeight(img.height);
+        setWidth(img.width);
+        setHeight(img.height);
         setIsUploading(true);
         setInputValue("");
       };
@@ -273,19 +280,28 @@ const Editor = ({
     }
   };
   useEffect(() => {
+    setInputValue("");
+  }, [activeItem]);
+  useEffect(() => {
     if (selectedImageUrl) {
       const img = new window.Image();
       img.src = selectedImageUrl;
       img.onload = () => {
         clearCanvas();
         setImage(img);
+        setImageWidth(img.width);
+        setImageHeight(img.height);
+        setWidth(img.width);
+        setHeight(img.height);
       };
     }
   }, [selectedImageUrl]);
 
   const generateImage = () => {
     setIsLoading(true);
-    generateImg(textRef.current.value).then(() => setIsUploading(true));
+    generateImg(inputValue)
+      .then(() => setIsUploading(true))
+      .finally(() => setIsLoading(false));
   };
 
   const modifyImage = () => {
@@ -293,20 +309,31 @@ const Editor = ({
     modifyImg({
       maskUrl: uploadedMaskImgUrl,
       imageUrl: uploadImgUrl,
-      prompt: textRef.current.value,
-    }).then(() => setIsLoading(false));
+      prompt: inputValue,
+    }).finally(() => setIsLoading(false), emptyMaskImg());
+    setInputValue("");
   };
-
+  const stageHeight = 465;
+  const stageWidth = 700;
   const bggenerated = () => {
     setIsLoading(true);
     bgGenerate({
       imageUrl: uploadImgUrl,
-      prompt: textRef.current.value,
-    }).then(() => setIsLoading(false));
-    setInputValue("");
+      prompt: inputValue,
+    })
+      .then(() => setInputValue(""))
+      .finally(() => setIsLoading(false));
   };
   const Spinnerarea = () => {
     return <div className="loading loading--full-height"></div>;
+  };
+
+  const increaseSize = () => {
+    setScalePercentage((prev) => Math.min(prev + 5, 100));
+  };
+
+  const decreaseSize = () => {
+    setScalePercentage((prev) => Math.max(prev - 5, 5));
   };
   return (
     <>
@@ -339,8 +366,8 @@ const Editor = ({
                 <div className="button-group">
                   <input
                     className="prompt"
-                    ref={textRef}
                     type="text"
+                    value={inputValue}
                     placeholder="Enter prompt..."
                     onChange={handleChange}
                   />
@@ -356,8 +383,8 @@ const Editor = ({
               <div className="button-group">
                 <input
                   className="prompt"
-                  ref={textRef}
                   type="text"
+                  value={inputValue}
                   placeholder="Enter prompt..."
                   onChange={handleChange}
                 />
@@ -384,15 +411,14 @@ const Editor = ({
                 <div className="button-group">
                   <input
                     className="prompt"
-                    ref={textRef}
                     type="text"
+                    value={inputValue}
                     placeholder="Enter prompt..."
                     onChange={handleChange}
                   />
                   <Buttonvalue
                     text="Mark Selection"
                     onClick={() => {
-                      setIsExtracting(true);
                       extractImage();
                     }}
                     disabled={!isUploading}
@@ -400,14 +426,7 @@ const Editor = ({
                   <Buttonvalue
                     text="Modify"
                     onClick={modifyImage}
-                    disabled={isExtracting}
-                    // tooltipText={isExtracting ? "Mark selection first" : ""}
-                  />
-
-                  <Buttonvalue text="Clear All" onClick={clearCanvas} />
-                  <Buttonvalue
-                    text={isErasing ? "Disable Eraser" : "EnaEraser"}
-                    onClick={toggleEraser}
+                    disabled={!uploadedMaskImgUrl}
                   />
                 </div>
               </>
@@ -425,12 +444,7 @@ const Editor = ({
                   <Buttonvalue
                     text="Erase Selected Image"
                     onClick={eraseObj}
-                    disabled={isExtracting}
-                  />
-                  <Buttonvalue text="Clear All" onClick={clearCanvas} />
-                  <Buttonvalue
-                    text={isErasing ? "Disable Eraser" : "Enable Eraser"}
-                    onClick={toggleEraser}
+                    disabled={!uploadedMaskImgUrl}
                   />
                 </div>
               </>
@@ -488,23 +502,62 @@ const Editor = ({
             )}
           </div>
           <div className="box-image">
-            <div className="button-group">
+            <div className="toolbar">
+              <button className="icon-btn" onClick={clearCanvas}>
+                <Trash size={20} stroke="black" />
+              </button>
+              <button className="icon-btn" onClick={toggleEraser}>
+                {isErasing ? (
+                  <Ban size={20} stroke="gray" />
+                ) : (
+                  <Eraser size={20} stroke="green" />
+                )}
+              </button>
+
               <input
                 type="file"
                 onChange={handleImageUpload}
                 disabled={!isFileUploading}
+                className="file-input"
               />
+
+              {uploadImgUrl && (
+                <span className="zoom-controls">
+                  <button className="icon-btn" onClick={decreaseSize}>
+                    <ZoomOut size={20} />
+                  </button>
+                  <span className="icon-text"> {scalePercentage}%</span>
+                  <button className="icon-btn" onClick={increaseSize}>
+                    <ZoomIn size={20} />
+                  </button>
+                </span>
+              )}
             </div>
+
             <Stage
               ref={stageRef}
-              width={692}
-              height={469}
+              width={stageWidth}
+              height={stageHeight}
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
             >
               <Layer>
-                {image && <Image image={image} width={700} height={450} />}
+                {bgImage && (
+                  <Image
+                    image={bgImage}
+                    width={stageWidth}
+                    height={stageHeight}
+                  />
+                )}
+                {image && (
+                  <Image
+                    image={image}
+                    x={50}
+                    width={(scalePercentage / 100) * imageWidth}
+                    height={(scalePercentage / 100) * imageHeight}
+                  />
+                )}
                 {lines.map((line, i) => (
                   <Line
                     key={i}

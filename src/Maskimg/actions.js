@@ -11,7 +11,7 @@ export const uploadMaskImgAction = (imageFile) => {
 };
 export const emptyMask = () => {
   return {
-    type: "UPLOAD_MASK_IMG",
+    type: "EMPTY_UPLOAD_MASK_IMG",
   };
 };
 
