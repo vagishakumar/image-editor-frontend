@@ -11,7 +11,6 @@ const maskImgReducer = (state = initialState, action) => {
       return { ...state, status: "pending", loading: true, error: null };
 
     case "UPLOAD_MASK_IMG_FULFILLED":
-      console.log("before", action.payload.imageUrl);
       return {
         ...state,
         uploadMaskImgUrl: action.payload.imageUrl,

@@ -38,12 +38,15 @@ const historyListReducer = (state = initialState, action) => {
      return {
       ...state,
       historyList: [{id:uuidv4(),
-        download: action.payload.data.result[0],
-          url: action.payload.resultUrl,
+        download: Array.isArray(action.payload.data.result) && action.payload.data.result.length > 0 
+        ? action.payload.data.result[0] 
+        : action.payload.resultUrl,
+         url: action.payload.resultUrl,
         timestamp: new Date().toISOString(),
       }, ...(state.historyList || [])],
     };
     case "EXPAND_IMG_FULFILLED": 
+    
      return {
       ...state,
       historyList: [{id:uuidv4(),

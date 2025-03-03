@@ -53,7 +53,6 @@ export const uploadImageAction = (imageFile) => {
 export const increaseResolution = (imageUrl) => {
   const formData = new FormData();
   formData.append("imageUrl", imageUrl);
-    console.log("imageFile",imageUrl)
   return {
     type: "INCREASE_RESOLUTION_IMG",
     payload: apiRequest("/api/ai/increaseResolution", "POST", formData),

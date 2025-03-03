@@ -4,12 +4,10 @@ const initialState = {
   };
   
   const BgGeneration = (state = initialState, action) => {
-    console.log("action",action.type)
     switch (action.type) {
       case "BG_GENERATION_IMG_PENDING":
         return { ...state, status: "pending" };
       case "BG_GENERATION_IMG_FULFILLED":
-        console.log("in generate")
         return {
           ...state,
           download: action.payload.data.result[0],

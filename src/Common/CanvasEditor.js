@@ -1,7 +1,8 @@
 
 import React, { useState } from "react";
+import PropTypes from "prop-types";
+
 import "./CSS/CanvasEditor.css"; 
-import "./CSS/spinner.css";
 const CanvasEditor = ({ imageSrc,onReplace }) => {
   if(imageSrc.length===0)return null;
   return (
@@ -20,9 +21,7 @@ const CanvasEditor = ({ imageSrc,onReplace }) => {
 const ImageBlock = ({ src ,download,onReplace}) => {
   const [loading,setLoading]= useState(true)
   const [downloadUrl,setDownloadUrl]= useState(null)
-  // const handleDownload = () => {
-  //   window.open(download, "_blank");
-  // };
+  
  
       const handleDownload = async () => {
         if(download){
@@ -50,7 +49,6 @@ const ImageBlock = ({ src ,download,onReplace}) => {
           const response = await fetch(src, { mode: "cors" });
           const blob = await response.blob();
           const blobUrl = URL.createObjectURL(blob);
-          console.log("Blob URL:", blobUrl);
           setDownloadUrl(blobUrl);
           return blobUrl;
         } catch (error) {
@@ -80,3 +78,12 @@ const ImageBlock = ({ src ,download,onReplace}) => {
 
 export default CanvasEditor;
 
+CanvasEditor.propTypes = {
+  imageSrc: PropTypes.oneOfType([
+    PropTypes.string, 
+    PropTypes.arrayOf(PropTypes.string)
+  ]).isRequired,  
+  onReplace: PropTypes.func.isRequired, 
+  src: PropTypes.string,  
+  download: PropTypes.oneOfType([PropTypes.func, PropTypes.string]), 
+};

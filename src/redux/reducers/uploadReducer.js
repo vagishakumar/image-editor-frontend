@@ -4,7 +4,6 @@ const initialState = {
 
 const uploadReducer = (state = initialState, action) => {
 
-  {console.log(action.type)}
   switch (action.type) {
     case "UPLOAD_IMG_PENDING":
       return { ...state, status: "pending" };
@@ -17,7 +16,6 @@ const uploadReducer = (state = initialState, action) => {
     case "UPLOAD_IMG_FAILED":
       return { ...state, status: "failed"};
     case "SET_UPLOADED_IMG_URL":
-  {console.log("payload",action.payload)}
       
       return { ...state, url: action.payload };
     default:

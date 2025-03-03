@@ -139,22 +139,18 @@ const handleImageUpload = (e) => {
   const removebg = () => {
     if (!uploadImgUrl) return;
     setIsLoading(true);
-    // console.log(uploadImgUrl);
     removeBackground(uploadImgUrl).then(() => setIsLoading(false));
   };
   const removefg = () => {
     if (!uploadImgUrl) return;
     setIsLoading(true);
-    // console.log(uploadImgUrl);
     removeFg(uploadImgUrl).then(() => setIsLoading(false));
   };
   const bgblured = () => {
     if (!uploadImgUrl) return;
     setIsLoading(true);
-    // console.log(uploadImgUrl);
     bgblur(uploadImgUrl).then(() => setIsLoading(false));
   };const incresolution = () => {
-    console.log(uploadImgUrl);
     if (!uploadImgUrl) return;
     setIsLoading(true);
     incResoln(uploadImgUrl).then(() => setIsLoading(false));
@@ -239,10 +235,7 @@ const handleImageUpload = (e) => {
       );
     }, "image/png");
   };
-  console.log("first", uploadedMaskImgUrl);
   const eraseObj = () => {
-    console.log(uploadImgUrl);
-    console.log("mask", uploadedMaskImgUrl);
     setIsLoading(true);
     eraseObject({
       maskUrl: uploadedMaskImgUrl,
@@ -251,7 +244,6 @@ const handleImageUpload = (e) => {
   };
   useEffect(() => {
     if (generatedurl) {
-      console.log("Generated Image URL updated:", generatedurl);
       uploadnewImg(generatedurl);
       const img = new window.Image();
       img.src = generatedurl;
@@ -265,7 +257,6 @@ const handleImageUpload = (e) => {
     }
   }, [generatedurl]);
   const handleReplace = (imageId) => {
-    console.log("Replacing image with ID:", imageId);
     const selectedImage = Lists.find((img) => img.id === imageId);
 
     if (selectedImage) {
@@ -279,7 +270,6 @@ const handleImageUpload = (e) => {
   };
   useEffect(() => {
     if (selectedImageUrl) {
-      console.log("Selected Image URL updated:", selectedImageUrl);
       const img = new window.Image();
       img.src = selectedImageUrl;
       img.onload = () => {
@@ -290,7 +280,6 @@ const handleImageUpload = (e) => {
   }, [selectedImageUrl]);
 
   const generateImage = () => {
-    console.log("firstenerate");
     setIsLoading(true);
     generateImg(textRef.current.value).then(() => setIsUploading(true));
   };
@@ -303,11 +292,9 @@ const handleImageUpload = (e) => {
       prompt: textRef.current.value,
     }).then(() => setIsLoading(false));
   };
-  console.log("url-out",uploadImgUrl)
 
   const bggenerated = () => {
     setIsLoading(true);
-    console.log("url",uploadImgUrl)
     bgGenerate({
       imageUrl: uploadImgUrl,
       prompt: textRef.current.value,
@@ -559,7 +546,7 @@ const mapDispatchToProps = (dispatch) => ({
 export default connect(mapStateToProps, mapDispatchToProps)(Editor);
 Editor.propTypes = {
   uploadedMaskImgUrl: PropTypes.string,
-  emptyMaskImg: PropTypes.string,
+  emptyMaskImg: PropTypes.func,
   uploadImage: PropTypes.func,
   uploadMaskImg: PropTypes.func,
   eraseObject: PropTypes.func,
