@@ -11,6 +11,7 @@
     "bootstrap": "^5.3.3",
     "konva": "^9.3.18",
     "lucide-react": "^0.476.0",
+    "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.9",
     "react-dom": "^18.2.0",
@@ -25,7 +26,6 @@
     "uuid": "^11.1.0",
     "web-vitals": "^2.1.4"
   },
-
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

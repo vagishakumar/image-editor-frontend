@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import { connect } from "react-redux";
+import PropTypes from 'prop-types';
 import { Stage, Layer, Image, Line } from "react-konva";
 import { Wand2, Scissors,Expand,ImageUpscale , Eraser, Edit3 } from "lucide-react";
 import {
@@ -262,7 +263,6 @@ const handleImageUpload = (e) => {
         setInputValue("")
       };
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [generatedurl]);
   const handleReplace = (imageId) => {
     console.log("Replacing image with ID:", imageId);
@@ -557,3 +557,22 @@ const mapDispatchToProps = (dispatch) => ({
   expandimage: (data) => dispatch(expandImg(data)),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Editor);
+Editor.propTypes = {
+  uploadedMaskImgUrl: PropTypes.string,
+  emptyMaskImg: PropTypes.string,
+  uploadImage: PropTypes.func,
+  uploadMaskImg: PropTypes.func,
+  eraseObject: PropTypes.func,
+  removeBackground: PropTypes.func,
+  generateImg: PropTypes.func,
+  modifyImg: PropTypes.func,
+  uploadImgUrl: PropTypes.string,
+  Lists: PropTypes.array,
+  generatedurl: PropTypes.string,
+  uploadnewImg: PropTypes.func,
+  incResoln: PropTypes.func,
+  removeFg: PropTypes.func,
+  bgblur: PropTypes.func,
+  bgGenerate: PropTypes.func,
+  expandimage: PropTypes.func,
+};
