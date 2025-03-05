@@ -10,14 +10,12 @@ import {
   ImageUpscale,
   Eraser,
   Edit3,
-  ZoomIn,
-  ZoomOut,
-  Trash,
-  Ban,
 } from "lucide-react";
 import { ReactComponent as EraseAll } from "../../assets/broom-svgrepo-com.svg";
 import { ReactComponent as EraserSvg } from "../../assets/eraser-icon.svg";
 import { ReactComponent as PenSvg } from "../../assets/pencil-svg.svg";
+import { ReactComponent as ZoomInSVG } from "../../assets/zoom-in-svgrepo-com.svg";
+import { ReactComponent as ZoomOutSVG } from "../../assets/zoom-out-svgrepo-com.svg";
 import {
   uploadImageAction,
   uploadMaskImgAction,
@@ -316,7 +314,7 @@ const Editor = ({
     }).finally(() => setIsLoading(false), emptyMaskImg());
     setInputValue("");
   };
-  const stageHeight = 465;
+  const stageHeight = 420;
   const stageWidth = 700;
   const bggenerated = () => {
     setIsLoading(true);
@@ -504,74 +502,87 @@ const Editor = ({
               </>
             )}
           </div>
-          <div className="box-image">
-            <div className="toolbar">
-              <button className="icon-btn" onClick={clearCanvas}>
-                <Trash size={20} stroke="black" />
-              </button>
-              <button className="icon-btn" onClick={toggleEraser}>
-                {isErasing ? (
-                  <Ban size={20} stroke="gray" />
-                ) : (
-                  <Eraser size={20} stroke="green" />
-                )}
-              </button>
-
+          <div className="box-image col-lg-8">
+            <div className="button-group flie-selector-div mb-2">
               <input
                 type="file"
+                id="fileInput"
                 onChange={handleImageUpload}
                 disabled={!isFileUploading}
-                className="file-input"
+                hidden
               />
+              <label htmlFor="fileInput" className="custom-button">
+                Upload File
+              </label>
+              <Buttonvalue
+                className="sqaure-btn"
+                // text="Clear All"
+                onClick={clearCanvas}
+              >
+                <EraseAll />
+              </Buttonvalue>
+              <Buttonvalue
+                className="sqaure-btn"
+                // text={isErasing ? "Disable Eraser" : "EnaEraser"}
+                onClick={toggleEraser}
+              >
+                {isErasing ? <PenSvg /> : <EraserSvg />}
+              </Buttonvalue>
 
               {uploadImgUrl && (
-                <span className="zoom-controls">
-                  <button className="icon-btn" onClick={decreaseSize}>
-                    <ZoomOut size={20} />
-                  </button>
-                  <span className="icon-text"> {scalePercentage}%</span>
-                  <button className="icon-btn" onClick={increaseSize}>
-                    <ZoomIn size={20} />
-                  </button>
-                </span>
+                <div className="d-flex align-items-center zoom-div">
+                  <Buttonvalue className="sqaure-btn" onClick={decreaseSize}>
+                    <ZoomOutSVG />
+                  </Buttonvalue>
+                  <div className="zoom-text">
+                    <span className="icon-text"> {scalePercentage}%</span>
+                  </div>
+                  <Buttonvalue className="sqaure-btn" onClick={increaseSize}>
+                    <ZoomInSVG />
+                  </Buttonvalue>
+                </div>
               )}
             </div>
 
-            <Stage
-              ref={stageRef}
-              width={stageWidth}
-              height={stageHeight}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
+            <div
+              className={`${isErasing ? "main-eraser-div" : "main-pencil-div"}`}
             >
-              <Layer>
-                {bgImage && (
-                  <Image
-                    image={bgImage}
-                    width={stageWidth}
-                    height={stageHeight}
-                  />
-                )}
-                {image && (
-                  <Image
-                    image={image}
-                    x={50}
-                    width={(scalePercentage / 100) * imageWidth}
-                    height={(scalePercentage / 100) * imageHeight}
-                  />
-                )}
-                {lines.map((line, i) => (
-                  <Line
-                    key={i}
-                    points={line.points}
-                    stroke="red"
-                    strokeWidth={2}
-                    onClick={() => handleErase(i)}
-                  />
-                ))}
-              </Layer>
-            </Stage>
+              <Stage
+                ref={stageRef}
+                width={stageWidth}
+                height={stageHeight}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+              >
+                <Layer>
+                  {bgImage && (
+                    <Image
+                      image={bgImage}
+                      width={stageWidth}
+                      height={stageHeight}
+                    />
+                  )}
+                  {image && (
+                    <Image
+                      image={image}
+                      x={50}
+                      width={(scalePercentage / 100) * imageWidth}
+                      height={(scalePercentage / 100) * imageHeight}
+                    />
+                  )}
+                  {lines.map((line, i) => (
+                    <Line
+                      key={i}
+                      points={line.points}
+                      stroke="red"
+                      strokeWidth={2}
+                      onClick={() => handleErase(i)}
+                    />
+                  ))}
+                </Layer>
+              </Stage>
+            </div>
           </div>
         </div>
       </div>

@@ -79,6 +79,30 @@ svg path {
   font-size: 18px;
   font-weight: bold;
 }
+
+.main-pencil-div {
+  canvas {
+    // cursor: url("../../assets//pencil-svg.svg") 0 0, auto;
+    cursor: url("https://awsstage-test.s3.amazonaws.com/109066/27be8c68-5138-4bf5-808f-021134fd64e9.png")
+        0 0,
+      auto !important;
+    // https://awsstage-test.s3.amazonaws.com/109066/fcdb0d69-f812-45dc-9198-9f72ded28efb.png
+    // cursor: url("https://awsstage-test.s3.amazonaws.com/109066/3b23f2e3-29d4-4ef3-b1b0-241e08e60a1e.png"),
+    //   auto;
+    // cursor: url("https://awsstage-test.s3.amazonaws.com/109066/a468dc0a-25a3-4358-acdf-a12222da0fbd.png")
+    //     0 0,
+    //   auto;
+  }
+}
+
+.main-eraser-div {
+  canvas {
+    cursor: url("https://awsstage-test.s3.amazonaws.com/109066/fcdb0d69-f812-45dc-9198-9f72ded28efb.png")
+        0 0,
+      auto !important;
+  }
+}
+
 .editor-header {
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
@@ -148,7 +172,8 @@ span {
     padding: 0;
     width: 47px;
     height: 47px;
-    margin: 0 0 0 10px;
+    margin: 0;
+    margin-left: 10px;
     /* border-radius: 50%; */
     background-color: var(--primary-color);
     transition: transform 0.3s;
@@ -180,6 +205,14 @@ span {
       fill: white;
     }
   }
+}
+
+.zoom-div {
+  margin-left: auto;
+}
+
+.zoom-text {
+  margin-left: 10px;
 }
 
 .prompt {
