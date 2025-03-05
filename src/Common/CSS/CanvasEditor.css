@@ -1,18 +1,18 @@
-
 .canvas-editor-container {
   margin-top: 30px;
   margin-left: 25px;
-  height: 1000px;
+  min-height: 300px;
+  height: auto;
+  overflow: visible;
   width: 1400px;
   padding: 20px;
   justify-content: center;
   align-items: center;
-  border: 1px solid black; 
-  border-radius: 10px; 
+  border: 1px solid black;
+  border-radius: 10px;
   background-color: #f8f8f8;
   box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
 }
-
 
 .image-grid {
   display: flex;
@@ -43,7 +43,7 @@
   object-fit: cover;
 }
 
- .button-group-2 {
+.button-group-2 {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -62,7 +62,7 @@
   font-size: 18px;
   cursor: pointer;
   transition: background 0.3s ease-in-out;
-} 
+}
 .image-box:hover .button-group-2 {
   opacity: 1;
 }
@@ -70,5 +70,3 @@
 .image-box:hover {
   background-color: lightgrey;
 }
-
-   

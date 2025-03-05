@@ -11,7 +11,7 @@ export const uploadMaskImgAction = (imageFile) => {
 };
 export const emptyMask = () => {
   return {
-    type: "UPLOAD_MASK_IMG",
+    type: "EMPTY_UPLOAD_MASK_IMG",
   };
 };
 
@@ -22,8 +22,7 @@ export const eraseObjectAction = ({ imageUrl, maskUrl }) => {
 
   return {
     type: "ERASE_OBJECT",
-    payload: apiRequest("/api/ai/eraser", "POST", formData)
-  
+    payload: apiRequest("/api/ai/eraser", "POST", formData),
   };
 };
 export const removeBackgroundAction = (imageInput) => {
@@ -38,9 +37,10 @@ export const removeBackgroundAction = (imageInput) => {
 
   return {
     type: "REMOVE_BG",
-    payload: apiRequest("/api/ai/removebg", "POST", requestData)
+    payload: apiRequest("/api/ai/removebg", "POST", requestData),
   };
 };
+
 export const uploadImageAction = (imageFile) => {
   const formData = new FormData();
   formData.append("image", imageFile);
@@ -50,6 +50,7 @@ export const uploadImageAction = (imageFile) => {
     payload: apiRequest("/api/ai/upload", "POST", formData),
   };
 };
+
 export const increaseResolution = (imageUrl) => {
   const formData = new FormData();
   formData.append("imageUrl", imageUrl);
@@ -58,6 +59,7 @@ export const increaseResolution = (imageUrl) => {
     payload: apiRequest("/api/ai/increaseResolution", "POST", formData),
   };
 };
+
 export const removeForeground = (imageUrl) => {
   const formData = new FormData();
   formData.append("imageUrl", imageUrl);
@@ -67,6 +69,7 @@ export const removeForeground = (imageUrl) => {
     payload: apiRequest("/api/ai/removeForeground", "POST", formData),
   };
 };
+
 export const blurBg = (imageUrl) => {
   const formData = new FormData();
   formData.append("imageUrl", imageUrl);
@@ -76,6 +79,7 @@ export const blurBg = (imageUrl) => {
     payload: apiRequest("/api/ai/blurBg", "POST", formData),
   };
 };
+
 export const generateImgAction = (prompt) => {
   const formData = new FormData();
   formData.append("prompt", prompt);
@@ -97,7 +101,14 @@ export const modifyImgAction = ({ prompt, imageUrl, maskUrl }) => {
     payload: apiRequest("/api/ai/modifier", "POST", formData),
   };
 };
-export const expandImg = ({ imageUrl, originalWidth,originalHeight,expectedWidth,expectedHeight }) => {
+
+export const expandImg = ({
+  imageUrl,
+  originalWidth,
+  originalHeight,
+  expectedWidth,
+  expectedHeight,
+}) => {
   const formData = new FormData();
   formData.append("imageUrl", imageUrl);
   formData.append("originalWidth", originalWidth);
@@ -110,6 +121,7 @@ export const expandImg = ({ imageUrl, originalWidth,originalHeight,expectedWidth
     payload: apiRequest("/api/ai/expand", "POST", formData),
   };
 };
+
 export const backgroundgeneration = ({ prompt, imageUrl }) => {
   const formData = new FormData();
   formData.append("prompt", prompt);

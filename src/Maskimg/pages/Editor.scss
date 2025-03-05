@@ -1,0 +1,324 @@
+:root {
+  --background-light: #f8fafc;
+  --active-color: #d9eafd;
+  --disable-color: #bcccdc;
+  --svg-color: #9aa6b2;
+  --primary-color: #81bfda;
+  --primary-hover-color: #78b3ce;
+}
+
+span {
+  color: #707c89 !important;
+}
+
+svg,
+svg path {
+  stroke: var(--svg-color) !important;
+}
+
+.editor-container {
+  margin: 20px auto;
+  height: fit-content;
+  width: 100%;
+  border-radius: 10px;
+}
+
+.box {
+  background-color: var(--background-light);
+  /* width: 100%; */
+  height: 500px;
+  /* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); */
+  justify-content: center;
+  font-size: 18px;
+  font-weight: bold;
+  border-bottom: 1px solid var(--disable-color);
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 10px;
+  align-items: center;
+  button {
+    background-color: #ffffff;
+    color: black;
+    border: 2px solid var(--disable-color);
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 6px;
+    margin-top: 20px;
+    width: 60%;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s, box-shadow 0.2s;
+  }
+}
+
+.button-group button:hover {
+  background-color: #f0f0f0;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.button-group button:active {
+  transform: scale(0.95);
+}
+
+.button-group button:disabled {
+  background-color: var(--disable-color);
+  border: 2px solid var(--disable-color);
+  cursor: not-allowed;
+}
+
+.box-image {
+  /* width: 100%; */
+  height: 500px;
+  background-color: var(--background-light);
+  border: 1px solid var(--disable-color);
+  border-top: none;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.main-pencil-div {
+  canvas {
+    // cursor: url("../../assets//pencil-svg.svg") 0 0, auto;
+    cursor: url("https://awsstage-test.s3.amazonaws.com/109066/27be8c68-5138-4bf5-808f-021134fd64e9.png")
+        0 0,
+      auto !important;
+    // https://awsstage-test.s3.amazonaws.com/109066/fcdb0d69-f812-45dc-9198-9f72ded28efb.png
+    // cursor: url("https://awsstage-test.s3.amazonaws.com/109066/3b23f2e3-29d4-4ef3-b1b0-241e08e60a1e.png"),
+    //   auto;
+    // cursor: url("https://awsstage-test.s3.amazonaws.com/109066/a468dc0a-25a3-4358-acdf-a12222da0fbd.png")
+    //     0 0,
+    //   auto;
+  }
+}
+
+.main-eraser-div {
+  canvas {
+    cursor: url("https://awsstage-test.s3.amazonaws.com/109066/fcdb0d69-f812-45dc-9198-9f72ded28efb.png")
+        0 0,
+      auto !important;
+  }
+}
+
+.editor-header {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  border: 1px solid var(--disable-color);
+  margin: auto;
+  height: fit-content;
+  width: 90%;
+  background-color: #ffffff;
+  color: black;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.editor-text {
+  margin-left: 30px;
+  color: var(--heading-color) !important;
+}
+
+.content-container {
+  margin: auto;
+  width: 90%;
+  display: flex;
+  height: 500px;
+  background-color: #f4f4f4;
+}
+
+.sidebar {
+  /* width: 180px; */
+  background-color: var(--background-light);
+  border: 1px solid var(--disable-color);
+  border-top: none;
+  border-bottom-left-radius: 10px;
+  height: 500px;
+}
+span {
+  color: black;
+}
+.menu {
+  color: black;
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.menu li {
+  color: black;
+  padding: 20px;
+  cursor: pointer;
+}
+
+.menu li.active {
+  background-color: var(--active-color);
+}
+
+.menu li:hover {
+  background-color: #cbc9c9;
+}
+
+.btn {
+  padding: 5px 10px;
+  font-size: 16px;
+  background-color: #3498db;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &.sqaure-btn {
+    padding: 0;
+    width: 47px;
+    height: 47px;
+    margin: 0;
+    margin-left: 10px;
+    /* border-radius: 50%; */
+    background-color: var(--primary-color);
+    transition: transform 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    border: none;
+
+    &:hover {
+      transform: scale(1.05);
+      background-color: var(--primary-hover-color);
+    }
+
+    &:active {
+      svg {
+        width: 30px !important;
+        height: 30px !important;
+        fill: white;
+        path {
+          fill: white;
+        }
+      }
+    }
+
+    svg {
+      width: 30px !important;
+      height: 30px !important;
+      fill: white;
+    }
+  }
+}
+
+.zoom-div {
+  margin-left: auto;
+}
+
+.zoom-text {
+  margin-left: 10px;
+}
+
+.prompt {
+  margin-top: 10px;
+  width: 70%;
+}
+.image-display {
+  /* width: 100%; */
+  height: 100%;
+  object-fit: cover;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8f8f8;
+  border-radius: 5px;
+  width: 100%;
+  margin-bottom: 5px;
+}
+
+.file-input {
+  padding: 5px;
+  margin-left: 100px;
+}
+
+.zoom-controls {
+  margin-left: 145px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.icon-btn {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  background-color: rgba(243, 207, 98, 0.556);
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.icon-btn:hover {
+  background-color: #f0f0f0;
+}
+
+.icon-text {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.image-show {
+  border: 1px solid #ccc;
+  position: relative;
+  white-space: nowrap;
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  width: 130px;
+  height: 25px;
+}
+
+.loading {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 6px;
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-left-color: #34db5b;
+  animation: spin 1s linear infinite;
+}
+
+.flie-selector-div {
+  display: flex;
+  flex-direction: row;
+
+  .custom-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      transform: scale(1.05);
+      background-color: var(--primary-hover-color);
+    }
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
