@@ -12,6 +12,7 @@ export const apiRequest = (
       url: `${api_url}${endpoint}`,
       method,
       data,
+      timeout: 15000,
       ...options,
     })
       .then((response) => resolve(response.data))
