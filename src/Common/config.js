@@ -1,5 +1,5 @@
 import axios from "axios";
-export const api_url = "https://image-editor-socialpilot-api.netlify.app";
+export const api_url = "https://image-editor-backend-o4zg.onrender.com";
 
 export const apiRequest = (
   endpoint,
@@ -12,7 +12,6 @@ export const apiRequest = (
       url: `${api_url}${endpoint}`,
       method,
       data,
-      timeout: 15000,
       ...options,
     })
       .then((response) => resolve(response.data))
